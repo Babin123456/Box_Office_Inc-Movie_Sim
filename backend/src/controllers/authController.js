@@ -3,6 +3,7 @@ import Studio from "../models/Studio.js";
 import GameState from "../models/GameState.js";
 
 import { hashPassword, comparePassword } from "../services/auth/authService.js";
+import { generateDirectors } from "../services/director/directorGenerator.js";
 import {
   AUTH_EVENTS,
   getAuthDiagnosticsForUser,
@@ -99,6 +100,7 @@ export const register = async (req, res) => {
 
     await GameState.create({
       user: user._id,
+      marketDirectors: generateDirectors(100),
     });
 
     user.studio = studio._id;

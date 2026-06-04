@@ -293,6 +293,214 @@ const gameStateSchema = new mongoose.Schema(
       },
     ],
 
+    marketDirectors: [
+      {
+        id: String,
+
+        name: String,
+
+        avatarSeed: String,
+
+        age: Number,
+
+        creativity: Number,
+
+        reliability: Number,
+
+        leadership: Number,
+
+        reputation: Number,
+
+        morale: Number,
+
+        salary: Number,
+
+        rarity: String,
+
+        genreExpertise: [String],
+
+        status: {
+          type: String,
+          default: "AVAILABLE",
+        },
+
+        busyUntilWeek: Number,
+
+        contractYears: Number,
+
+        moviesDirected: {
+          type: Number,
+          default: 0,
+        },
+
+        hitMovies: {
+          type: Number,
+          default: 0,
+        },
+
+        flopMovies: {
+          type: Number,
+          default: 0,
+        },
+
+        awards: {
+          type: Number,
+          default: 0,
+        },
+
+        awardsHistory: [
+          {
+            awardName: String,
+            movieName: String,
+            week: Number,
+            genre: String,
+            rating: Number,
+            reputationGain: Number,
+            skillBoosts: {
+              creativity: Number,
+              reliability: Number,
+              leadership: Number,
+            },
+          },
+        ],
+
+        totalEarnings: {
+          type: Number,
+          default: 0,
+        },
+
+        salaryHistory: [
+          {
+            week: Number,
+            salary: Number,
+            reason: String,
+          },
+        ],
+
+        careerHistory: [
+          {
+            movieName: String,
+            studioName: String,
+            releaseWeek: Number,
+            genre: String,
+            movieRating: Number,
+            boxOffice: Number,
+            outcome: String,
+          },
+        ],
+
+        discovered: {
+          type: Number,
+          default: 0,
+        },
+      },
+    ],
+
+    ownedDirectors: [
+      {
+        id: String,
+
+        name: String,
+
+        avatarSeed: String,
+
+        age: Number,
+
+        creativity: Number,
+
+        reliability: Number,
+
+        leadership: Number,
+
+        reputation: Number,
+
+        morale: Number,
+
+        salary: Number,
+
+        rarity: String,
+
+        genreExpertise: [String],
+
+        status: {
+          type: String,
+          default: "AVAILABLE",
+        },
+
+        busyUntilWeek: Number,
+
+        contractYears: Number,
+
+        moviesDirected: {
+          type: Number,
+          default: 0,
+        },
+
+        hitMovies: {
+          type: Number,
+          default: 0,
+        },
+
+        flopMovies: {
+          type: Number,
+          default: 0,
+        },
+
+        awards: {
+          type: Number,
+          default: 0,
+        },
+
+        awardsHistory: [
+          {
+            awardName: String,
+            movieName: String,
+            week: Number,
+            genre: String,
+            rating: Number,
+            reputationGain: Number,
+            skillBoosts: {
+              creativity: Number,
+              reliability: Number,
+              leadership: Number,
+            },
+          },
+        ],
+
+        totalEarnings: {
+          type: Number,
+          default: 0,
+        },
+
+        salaryHistory: [
+          {
+            week: Number,
+            salary: Number,
+            reason: String,
+          },
+        ],
+
+        careerHistory: [
+          {
+            movieName: String,
+            studioName: String,
+            releaseWeek: Number,
+            genre: String,
+            movieRating: Number,
+            boxOffice: Number,
+            outcome: String,
+          },
+        ],
+
+        discovered: {
+          type: Number,
+          default: 0,
+        },
+
+        hiredAt: Date,
+      },
+    ],
+
     activeWritingProjects: [
       {
         id: String,
