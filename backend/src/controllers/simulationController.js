@@ -1,17 +1,30 @@
-import runWeeklySimulation from "../services/simulation/runWeeklySimulation.js";
+import GameState from "../models/GameState.js";
+import { runWeeklySimulation } from "../services/simulation/runWeeklySimulation.js";
 
-export const nextWeek = async (req, res) => {
+export const simulateWeek = async (req, res) => {
   try {
-    const gameState = await runWeeklySimulation(req.user._id);
+    const gameState = await GameState.findOne({
+      user: req.user._id,
+    });
+
+    if (!gameState) {
+      return res.status(404).json({
+        message: "Game state not found",
+      });
+    }
+
+    await runWeeklySimulation(gameState);
+
+    await gameState.save();
 
     res.status(200).json({
-      success: true,
+      message: "Week simulated successfully",
+
       currentWeek: gameState.currentWeek,
-      notifications: gameState.notifications,
     });
   } catch (error) {
     res.status(500).json({
-      message: error.message,
+      message: "Simulation failed",
     });
   }
 };

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { DollarSign, Star, Users, Building } from "lucide-react";
@@ -11,7 +11,7 @@ import StatCard from "../../components/common/StatCard";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-
+  const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -28,6 +28,20 @@ const Dashboard = () => {
     fetchUser();
   }, [dispatch]);
 
+  const simulateWeek = async () => {
+    try {
+      setLoading(true);
+
+      await api.post("/simulation/next-week");
+
+      window.location.reload();
+    } catch (error) {
+      alert(error?.response?.data?.message || "Simulation failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -41,6 +55,22 @@ const Dashboard = () => {
             Create Blockbusters. Become a Legend.
           </p>
         </div>
+
+        <button
+          onClick={simulateWeek}
+          disabled={loading}
+          className="
+  bg-violet-600
+  hover:bg-violet-700
+  px-6
+  py-3
+  rounded-xl
+  text-white
+  font-semibold
+"
+        >
+          {loading ? "Simulating..." : "Simulate Week"}
+        </button>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">

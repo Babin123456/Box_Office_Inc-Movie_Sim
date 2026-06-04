@@ -7,6 +7,7 @@ import {
   FileBarChart,
   Pen,
   Bell,
+  Settings,
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -54,6 +55,11 @@ const Sidebar = () => {
       name: "Reports",
       path: "/reports",
       icon: FileBarChart,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: Settings,
     },
   ];
 

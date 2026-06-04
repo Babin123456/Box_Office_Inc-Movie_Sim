@@ -1,21 +1,7 @@
-import GameState from "../../models/GameState.js";
+import { processWeeklyTick } from "./engines/tickEngine.js";
 
-import processWeeklyTick from "./engines/tickEngine.js";
-
-const runWeeklySimulation = async (userId) => {
-  const gameState = await GameState.findOne({
-    user: userId,
-  });
-
-  if (!gameState) {
-    throw new Error("Game state not found");
-  }
+export const runWeeklySimulation = async (gameState) => {
+  gameState.currentWeek += 1;
 
   await processWeeklyTick(gameState);
-
-  await gameState.save();
-
-  return gameState;
 };
-
-export default runWeeklySimulation;

@@ -9,6 +9,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Scripts from "./pages/scripts/Scripts";
 import Writers from "./pages/writers/Writers";
 import Notifications from "./pages/notifications/Notifications";
+import Settings from "./pages/settings/Settings";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         />
 
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   );
