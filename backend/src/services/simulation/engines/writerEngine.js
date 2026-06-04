@@ -16,9 +16,11 @@ export const processWritingProjects = async (gameState) => {
     );
 
     if (gameState.currentWeek >= project.completionWeek) {
-      const writer = gameState.ownedWriters.find(
+      const writerIndex = gameState.ownedWriters.findIndex(
         (w) => w.id === project.writerId
       );
+
+      const writer = gameState.ownedWriters[writerIndex];
 
       if (!writer) {
         continue;
@@ -50,6 +52,17 @@ export const processWritingProjects = async (gameState) => {
       writer.discovered = Math.min(100, previousDiscovery + 15);
 
       addNotification(gameState, `${writer.name} completed "${script.title}".`);
+
+      const releasedWriter = writer.toObject ? writer.toObject() : { ...writer };
+
+      gameState.marketWriters.push(releasedWriter);
+
+      gameState.ownedWriters.splice(writerIndex, 1);
+
+      addNotification(
+        gameState,
+        `${writer.name}'s writing contract is complete. They returned to the writer market with no fan loss or compensation penalty.`
+      );
 
       if (previousDiscovery < 50 && writer.discovered >= 50) {
         addNotification(
