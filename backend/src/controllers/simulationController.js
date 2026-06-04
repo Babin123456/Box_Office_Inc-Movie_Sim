@@ -1,4 +1,5 @@
 import GameState from "../models/GameState.js";
+import Studio from "../models/Studio.js";
 import { runWeeklySimulation } from "../services/simulation/runWeeklySimulation.js";
 
 export const simulateWeek = async (req, res) => {
@@ -13,8 +14,19 @@ export const simulateWeek = async (req, res) => {
       });
     }
 
-    await runWeeklySimulation(gameState);
+    const studio = await Studio.findOne({
+      owner: req.user._id,
+    });
 
+    if (!studio) {
+      return res.status(404).json({
+        message: "Studio not found",
+      });
+    }
+
+    await runWeeklySimulation(gameState, studio);
+
+    await studio.save();
     await gameState.save();
 
     res.status(200).json({
