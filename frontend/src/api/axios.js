@@ -4,6 +4,8 @@ import { store } from "../app/store";
 import { logout, setCredentials } from "../features/auth/authSlice";
 
 const baseURL = "http://localhost:5000/api";
+const REFRESH_BUFFER_MS = 60 * 1000;
+const MIN_REFRESH_DELAY_MS = 5 * 1000;
 
 const refreshClient = axios.create({
   baseURL,
@@ -16,6 +18,7 @@ const api = axios.create({
 });
 
 let refreshRequest = null;
+let refreshTimer = null;
 
 const isAuthEndpoint = (url = "") =>
   url.includes("/auth/login") ||
@@ -23,17 +26,87 @@ const isAuthEndpoint = (url = "") =>
   url.includes("/auth/refresh") ||
   url.includes("/auth/logout");
 
+const decodeAccessTokenExpiresAt = (token) => {
+  if (!token) {
+    return null;
+  }
+
+  const [, payload] = token.split(".");
+
+  if (!payload) {
+    return null;
+  }
+
+  const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const paddedPayload = normalizedPayload.padEnd(
+    normalizedPayload.length + ((4 - (normalizedPayload.length % 4)) % 4),
+    "=",
+  );
+
+  try {
+    const decodedPayload = JSON.parse(window.atob(paddedPayload));
+
+    return decodedPayload?.exp ? decodedPayload.exp * 1000 : null;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const clearScheduledRefresh = () => {
+  if (refreshTimer) {
+    window.clearTimeout(refreshTimer);
+    refreshTimer = null;
+  }
+};
+
+export const scheduleTokenRefresh = (token, accessTokenExpiresAt) => {
+  clearScheduledRefresh();
+
+  const expiresAt = accessTokenExpiresAt || decodeAccessTokenExpiresAt(token);
+
+  if (!expiresAt) {
+    return;
+  }
+
+  const refreshDelay = Math.max(
+    expiresAt - Date.now() - REFRESH_BUFFER_MS,
+    MIN_REFRESH_DELAY_MS,
+  );
+
+  refreshTimer = window.setTimeout(() => {
+    refreshAuthSession().catch((error) => {
+      console.error(error);
+      store.dispatch(logout());
+    });
+  }, refreshDelay);
+};
+
+export const persistAuthSession = ({ user, token, accessTokenExpiresAt }) => {
+  const resolvedAccessTokenExpiresAt =
+    accessTokenExpiresAt || decodeAccessTokenExpiresAt(token);
+
+  store.dispatch(
+    setCredentials({
+      user,
+      token,
+      accessTokenExpiresAt: resolvedAccessTokenExpiresAt,
+    }),
+  );
+
+  scheduleTokenRefresh(token, resolvedAccessTokenExpiresAt);
+};
+
 export const refreshAuthSession = async () => {
   if (!refreshRequest) {
     refreshRequest = refreshClient
       .post("/auth/refresh")
       .then((res) => {
-        store.dispatch(
-          setCredentials({
-            user: res.data.user,
-            token: res.data.token,
-          }),
-        );
+        persistAuthSession({
+          user: res.data.user,
+          token: res.data.token,
+          accessTokenExpiresAt: res.data.accessTokenExpiresAt,
+        });
 
         return res;
       })
@@ -77,6 +150,7 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (refreshError) {
+        clearScheduledRefresh();
         store.dispatch(logout());
         return Promise.reject(refreshError);
       }
@@ -85,5 +159,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+const storedToken = localStorage.getItem("token");
+const storedAccessTokenExpiresAt = Number(
+  localStorage.getItem("accessTokenExpiresAt"),
+);
+
+if (storedToken) {
+  scheduleTokenRefresh(storedToken, storedAccessTokenExpiresAt || null);
+}
 
 export default api;

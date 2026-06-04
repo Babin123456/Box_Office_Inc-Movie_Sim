@@ -1,16 +1,13 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 
-import api from "../../api/axios";
-import { setCredentials } from "../../features/auth/authSlice";
+import api, { persistAuthSession } from "../../api/axios";
 
 import AuthLayout from "../../layouts/AuthLayout";
 import AuthCard from "../../components/common/AuthCard";
 import AuthInput from "../../components/common/AuthInput";
 
 const Login = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -25,12 +22,11 @@ const Login = () => {
         password,
       });
 
-      dispatch(
-        setCredentials({
-          user: res.data.user,
-          token: res.data.token,
-        }),
-      );
+      persistAuthSession({
+        user: res.data.user,
+        token: res.data.token,
+        accessTokenExpiresAt: res.data.accessTokenExpiresAt,
+      });
 
       navigate("/");
     } catch (error) {

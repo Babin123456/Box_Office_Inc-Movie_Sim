@@ -1,16 +1,13 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
-import api from "../../api/axios";
-import { setCredentials } from "../../features/auth/authSlice";
+import api, { persistAuthSession } from "../../api/axios";
 
 import AuthLayout from "../../layouts/AuthLayout";
 import AuthCard from "../../components/common/AuthCard";
 import AuthInput from "../../components/common/AuthInput";
 
 const Register = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -26,12 +23,11 @@ const Register = () => {
     try {
       const res = await api.post("/auth/register", form);
 
-      dispatch(
-        setCredentials({
-          user: res.data.user,
-          token: res.data.token,
-        }),
-      );
+      persistAuthSession({
+        user: res.data.user,
+        token: res.data.token,
+        accessTokenExpiresAt: res.data.accessTokenExpiresAt,
+      });
 
       navigate("/");
     } catch (error) {

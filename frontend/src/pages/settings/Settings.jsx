@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import api from "../../api/axios";
+import api, { clearScheduledRefresh } from "../../api/axios";
 import { logout } from "../../features/auth/authSlice";
 import DashboardLayout from "../../layouts/DashboardLayout";
 
@@ -15,6 +15,7 @@ const Settings = () => {
     } catch (error) {
       console.error(error);
     } finally {
+      clearScheduledRefresh();
       dispatch(logout());
       navigate("/login");
     }

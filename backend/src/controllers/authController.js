@@ -1,40 +1,18 @@
-import crypto from "crypto";
-
-import jwt from "jsonwebtoken";
-
 import User from "../models/User.js";
 import Studio from "../models/Studio.js";
 import GameState from "../models/GameState.js";
 
 import { hashPassword, comparePassword } from "../services/auth/authService.js";
 
-import { generateAccessToken, generateRefreshToken } from "../utils/generateTokens.js";
-import env from "../config/env.js";
-
-const REFRESH_COOKIE_NAME = "refreshToken";
-const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000;
-
-const hashRefreshToken = (token) =>
-  crypto.createHash("sha256").update(token).digest("hex");
-
-const getRefreshCookieOptions = () => ({
-  httpOnly: true,
-  secure: env.NODE_ENV === "production",
-  sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-  maxAge: THIRTY_DAYS_IN_MS,
-  path: "/api/auth",
-});
-
-const setRefreshTokenCookie = (res, refreshToken) => {
-  res.cookie(REFRESH_COOKIE_NAME, refreshToken, getRefreshCookieOptions());
-};
-
-const clearRefreshTokenCookie = (res) => {
-  const cookieOptions = getRefreshCookieOptions();
-  delete cookieOptions.maxAge;
-
-  res.clearCookie(REFRESH_COOKIE_NAME, cookieOptions);
-};
+import {
+  REFRESH_COOKIE_NAME,
+  REFRESH_TOKEN_TTL_MS,
+  clearRefreshTokenCookie,
+  createAuthTokenBundle,
+  hashRefreshToken,
+  setRefreshTokenCookie,
+  verifyRefreshToken,
+} from "../services/auth/tokenService.js";
 
 const sanitizeUser = (user) => {
   const userObject = user.toObject ? user.toObject() : user;
@@ -44,7 +22,7 @@ const sanitizeUser = (user) => {
 };
 
 const persistRefreshToken = async (user, refreshToken) => {
-  const expiresAt = new Date(Date.now() + THIRTY_DAYS_IN_MS);
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
   user.refreshTokens = [
     ...(user.refreshTokens || []).filter(
@@ -61,13 +39,12 @@ const persistRefreshToken = async (user, refreshToken) => {
 };
 
 const issueAuthTokens = async (res, user) => {
-  const token = generateAccessToken(user._id);
-  const refreshToken = generateRefreshToken(user._id);
+  const tokenBundle = createAuthTokenBundle(user._id);
 
-  await persistRefreshToken(user, refreshToken);
-  setRefreshTokenCookie(res, refreshToken);
+  await persistRefreshToken(user, tokenBundle.refreshToken);
+  setRefreshTokenCookie(res, tokenBundle.refreshToken);
 
-  return token;
+  return tokenBundle;
 };
 
 export const register = async (req, res) => {
@@ -104,11 +81,12 @@ export const register = async (req, res) => {
 
     user.studio = studio._id;
 
-    const token = await issueAuthTokens(res, user);
+    const tokenBundle = await issueAuthTokens(res, user);
 
     res.status(201).json({
       success: true,
-      token,
+      token: tokenBundle.token,
+      accessTokenExpiresAt: tokenBundle.accessTokenExpiresAt,
       user: sanitizeUser(user),
       studio,
     });
@@ -144,14 +122,15 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = await issueAuthTokens(res, user);
+    const tokenBundle = await issueAuthTokens(res, user);
     const populatedUser = await User.findById(user._id)
       .select("-password -refreshTokens")
       .populate("studio");
 
     res.status(200).json({
       success: true,
-      token,
+      token: tokenBundle.token,
+      accessTokenExpiresAt: tokenBundle.accessTokenExpiresAt,
       user: populatedUser,
     });
   } catch (error) {
@@ -173,7 +152,7 @@ export const refreshSession = async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET);
+    const decoded = verifyRefreshToken(refreshToken);
     const tokenHash = hashRefreshToken(refreshToken);
     const user = await User.findById(decoded.userId);
 
@@ -207,14 +186,15 @@ export const refreshSession = async (req, res) => {
       (session) => session.tokenHash !== tokenHash && session.expiresAt > now,
     );
 
-    const token = await issueAuthTokens(res, user);
+    const tokenBundle = await issueAuthTokens(res, user);
     const refreshedUser = await User.findById(user._id)
       .select("-password -refreshTokens")
       .populate("studio");
 
     res.status(200).json({
       success: true,
-      token,
+      token: tokenBundle.token,
+      accessTokenExpiresAt: tokenBundle.accessTokenExpiresAt,
       user: refreshedUser,
     });
   } catch (error) {
