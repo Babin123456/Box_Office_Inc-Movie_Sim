@@ -104,6 +104,8 @@ export const generateWriter = (forcedAge = null) => {
 
     awards: 0,
 
+    awardsHistory: [],
+
     totalEarnings: 0,
 
     salaryHistory: [

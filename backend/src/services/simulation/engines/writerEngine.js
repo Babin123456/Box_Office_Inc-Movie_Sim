@@ -1,4 +1,5 @@
 import { createScriptFromWriter } from "../../writer/scriptCreationEngine.js";
+import { applyWriterAwards } from "../../writer/writerAwardsEngine.js";
 import { applyWriterSalaryProgression } from "../../writer/writerSalaryProgressionEngine.js";
 
 import { addNotification } from "../helpers/notificationHelper.js";
@@ -71,15 +72,29 @@ export const processWritingProjects = async (gameState, studio) => {
         scriptQuality: script.quality,
       });
 
+      const awardsWon = applyWriterAwards({
+        writer,
+        script,
+        currentWeek: gameState.currentWeek,
+      });
+
       const salaryProgression = applyWriterSalaryProgression({
         writer,
         script,
         currentWeek: gameState.currentWeek,
         wasHit,
         wasFlop,
+        awardsWon: awardsWon.length,
       });
 
       addNotification(gameState, `${writer.name} completed "${script.title}".`);
+
+      awardsWon.forEach((award) => {
+        addNotification(
+          gameState,
+          `${writer.name} won ${award.awardName} for "${script.title}".`
+        );
+      });
 
       if (salaryProgression.changed) {
         addNotification(

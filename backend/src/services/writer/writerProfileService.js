@@ -62,6 +62,7 @@ export const buildWriterProfile = (writer) => {
       careerReputation: analytics.careerReputation,
       marketValue: analytics.marketValue,
       awards: Number(normalizedWriter.awards || 0),
+      awardsHistory: normalizedWriter.awardsHistory || [],
       totalEarnings: Number(normalizedWriter.totalEarnings || 0),
       salaryHistory: normalizeSalaryHistory(normalizedWriter),
       analytics,

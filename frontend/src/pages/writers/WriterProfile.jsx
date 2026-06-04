@@ -185,6 +185,35 @@ const WriterProfile = () => {
         </div>
 
         <section className="rounded-2xl border border-slate-800 bg-[#111827] p-6">
+          <h2 className="text-2xl font-bold text-white">Awards</h2>
+
+          <div className="mt-5 space-y-3">
+            {career.awardsHistory.length === 0 ? (
+              <p className="text-slate-500">No awards won yet.</p>
+            ) : (
+              career.awardsHistory.map((award, index) => (
+                <div
+                  key={`${award.awardName}-${award.scriptName}-${index}`}
+                  className="rounded-xl bg-slate-900 p-4 text-slate-300"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-white">{award.awardName}</p>
+                      <p className="text-sm text-slate-400">
+                        {award.scriptName} • {award.genre} • Week {award.week}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-300">
+                      +{award.reputationGain} Rep
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-800 bg-[#111827] p-6">
           <h2 className="text-2xl font-bold text-white">Scripts Written</h2>
 
           <div className="mt-5 overflow-x-auto">

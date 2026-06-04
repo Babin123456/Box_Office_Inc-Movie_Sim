@@ -120,6 +120,21 @@ const gameStateSchema = new mongoose.Schema(
           default: 0,
         },
 
+        awardsHistory: [
+          {
+            awardName: String,
+            scriptName: String,
+            week: Number,
+            genre: String,
+            reputationGain: Number,
+            skillBoosts: {
+              originality: Number,
+              consistency: Number,
+              reliability: Number,
+            },
+          },
+        ],
+
         totalEarnings: {
           type: Number,
           default: 0,
@@ -204,6 +219,21 @@ const gameStateSchema = new mongoose.Schema(
           type: Number,
           default: 0,
         },
+
+        awardsHistory: [
+          {
+            awardName: String,
+            scriptName: String,
+            week: Number,
+            genre: String,
+            reputationGain: Number,
+            skillBoosts: {
+              originality: Number,
+              consistency: Number,
+              reliability: Number,
+            },
+          },
+        ],
 
         totalEarnings: {
           type: Number,
