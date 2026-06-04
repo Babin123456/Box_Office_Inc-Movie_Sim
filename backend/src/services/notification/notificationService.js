@@ -7,6 +7,6 @@ export const addNotification = (gameState, message, type = "SYSTEM") => {
   });
 };
 
-export const unreadCount = (notifications) => {
+export const unreadCount = (notifications = []) => {
   return notifications.filter((notification) => !notification.read).length;
 };

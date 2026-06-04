@@ -45,7 +45,14 @@ function App() {
           }
         />
 
-        <Route path="/notifications" element={<Notifications />} />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
