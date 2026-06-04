@@ -45,7 +45,18 @@ export const processWritingProjects = async (gameState) => {
 
       writer.morale = Math.min(100, writer.morale + 2);
 
+      const previousDiscovery = Number(writer.discovered || 0);
+
+      writer.discovered = Math.min(100, previousDiscovery + 15);
+
       addNotification(gameState, `${writer.name} completed "${script.title}".`);
+
+      if (previousDiscovery < 50 && writer.discovered >= 50) {
+        addNotification(
+          gameState,
+          `${writer.name} has been fully discovered. All writer stats are now revealed.`
+        );
+      }
 
       completedProjects.push(project.id);
     }

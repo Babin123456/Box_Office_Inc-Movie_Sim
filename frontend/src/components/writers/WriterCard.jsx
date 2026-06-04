@@ -32,7 +32,11 @@ const WriterCard = ({
 }) => {
   const avatar = `https://api.dicebear.com/7.x/personas/svg?seed=${writer.avatarSeed}`;
 
-  const hiddenStats = Number(writer.discovered || 0) < 50;
+  const hiddenStats =
+    writer.statsRevealed === false || Number(writer.discovered || 0) < 50;
+
+  const renderDiscoveredStat = (stat) =>
+    hiddenStats || stat === null || stat === undefined ? "???" : stat;
 
   return (
     <div
@@ -73,25 +77,29 @@ const WriterCard = ({
         </h2>
 
         <p className="text-sm text-slate-400">{writer.status}</p>
+
+        <p className="mt-2 text-xs text-slate-500">
+          Discovery {Math.min(100, Number(writer.discovered || 0))}%
+        </p>
       </div>
 
       <div className="mt-5 space-y-2 text-slate-300">
         <div className="flex justify-between">
           <span>Originality</span>
 
-          <span>{hiddenStats ? "???" : writer.originality}</span>
+          <span>{renderDiscoveredStat(writer.originality)}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Consistency</span>
 
-          <span>{hiddenStats ? "???" : writer.consistency}</span>
+          <span>{renderDiscoveredStat(writer.consistency)}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Reliability</span>
 
-          <span>{hiddenStats ? "???" : writer.reliability}</span>
+          <span>{renderDiscoveredStat(writer.reliability)}</span>
         </div>
 
         <div className="flex justify-between">

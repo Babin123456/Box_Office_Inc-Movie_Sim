@@ -1,6 +1,7 @@
 import GameState from "../models/GameState.js";
 import Studio from "../models/Studio.js";
 import { generateWriters } from "../services/writer/writerGenerator.js";
+import { presentWriters } from "../services/writer/writerPresenter.js";
 import crypto from "crypto";
 
 export const getMarketWriters = async (req, res) => {
@@ -21,7 +22,7 @@ export const getMarketWriters = async (req, res) => {
   }
 
   res.status(200).json({
-    writers: gameState.marketWriters,
+    writers: presentWriters(gameState.marketWriters),
   });
 };
 
@@ -37,7 +38,7 @@ export const getOwnedWriters = async (req, res) => {
   }
 
   res.status(200).json({
-    writers: gameState.ownedWriters,
+    writers: presentWriters(gameState.ownedWriters),
   });
 };
 
