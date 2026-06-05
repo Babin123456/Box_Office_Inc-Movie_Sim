@@ -2,6 +2,21 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const requiredEnvVars = [
+  "MONGO_URI",
+  "JWT_ACCESS_SECRET",
+  "JWT_REFRESH_SECRET",
+  "CLIENT_URL",
+];
+
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+
+if (missingEnvVars.length > 0) {
+  throw new Error(
+    `CRITICAL: Missing required environment variables: ${missingEnvVars.join(", ")}. Check your .env file.`,
+  );
+}
+
 const env = {
   PORT: process.env.PORT || 5000,
 
