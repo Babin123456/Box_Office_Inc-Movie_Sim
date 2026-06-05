@@ -28,6 +28,16 @@ const Sidebar = () => {
       icon: Film,
     },
     {
+      name: "Ready for Release",
+      path: "/movies/ready",
+      icon: Film,
+    },
+    {
+      name: "Library",
+      path: "/movies/library",
+      icon: Film,
+    },
+    {
       name: "Scripts",
       path: "/scripts",
       icon: Film,

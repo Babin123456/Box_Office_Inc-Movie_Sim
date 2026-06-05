@@ -37,6 +37,22 @@ const studioSchema = new mongoose.Schema(
       default: 1,
       min: 1,
     },
+
+    highestGrossingMovie: {
+        id: String,
+        title: String,
+        amount: Number
+    },
+    mostProfitableMovie: {
+        id: String,
+        title: String,
+        amount: Number
+    },
+    bestReviewedMovie: {
+        id: String,
+        title: String,
+        amount: Number
+    },
   },
   {
     timestamps: true,

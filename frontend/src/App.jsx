@@ -14,6 +14,9 @@ import CrewMarket from "./pages/crew/CrewMarket";
 import OwnedCrew from "./pages/crew/OwnedCrew";
 import ActiveMovies from "./pages/movies/ActiveMovies";
 import CreateMovie from "./pages/movies/CreateMovie";
+import ReadyForRelease from "./pages/movies/ReadyForRelease";
+import ReleaseResult from "./pages/movies/ReleaseResult";
+import MovieLibrary from "./pages/movies/MovieLibrary";
 import DirectorProfile from "./pages/directors/DirectorProfile";
 import WriterProfile from "./pages/writers/WriterProfile";
 import Notifications from "./pages/notifications/Notifications";
@@ -33,6 +36,30 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movies/ready"
+          element={
+            <ProtectedRoute>
+              <ReadyForRelease />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movies/:id/results"
+          element={
+            <ProtectedRoute>
+              <ReleaseResult />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movies/library"
+          element={
+            <ProtectedRoute>
+              <MovieLibrary />
             </ProtectedRoute>
           }
         />

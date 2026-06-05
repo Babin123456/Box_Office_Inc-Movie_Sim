@@ -17,10 +17,17 @@ const movieSchema = new mongoose.Schema(
     hype: { type: Number, default: 0 },
 
     criticScore: { type: Number, default: 0 },
+    criticLabel: { type: String, default: "" },
     audienceScore: { type: Number, default: 0 },
+    audienceLabel: { type: String, default: "" },
 
-    boxOffice: { type: Number, default: 0 },
+    boxOffice: { type: Number, default: 0 }, // Worldwide Gross
+    openingWeekend: { type: Number, default: 0 },
+    domesticGross: { type: Number, default: 0 },
+    internationalGross: { type: Number, default: 0 },
+    worldwideGross: { type: Number, default: 0 },
     profit: { type: Number, default: 0 },
+    roi: { type: Number, default: 0 },
     verdict: { type: String, default: "N/A" },
 
     status: {

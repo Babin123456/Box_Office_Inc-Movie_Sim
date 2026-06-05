@@ -1,6 +1,11 @@
 import Movie from "../models/Movie.js";
 import GameState from "../models/GameState.js";
 import Studio from "../models/Studio.js";
+import { generateReviews } from "../services/simulation/engines/reviewEngine.js";
+import { generateBoxOffice } from "../services/simulation/engines/boxOfficeEngine.js";
+import { processCareerImpact } from "../services/simulation/engines/careerImpactEngine.js";
+import { processStudioGrowth } from "../services/simulation/engines/studioGrowthEngine.js";
+import { addNotification } from "../services/simulation/helpers/notificationHelper.js";
 
 const findGameState = async (userId) => GameState.findOne({ user: userId });
 
@@ -114,6 +119,87 @@ export const getActiveMovies = async (req, res) => {
         if (!gameState) return res.status(404).json({ success: false, message: "Game state not found" });
 
         const movies = await Movie.find({ _id: { $in: gameState.activeMovies } });
+        res.status(200).json({ success: true, movies });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const releaseMovie = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const movie = await Movie.findById(id);
+        if (!movie) return res.status(404).json({ success: false, message: "Movie not found" });
+        if (movie.status !== "READY_FOR_RELEASE") {
+            return res.status(400).json({ success: false, message: "Movie is not ready for release" });
+        }
+
+        const gameState = await findGameState(req.user._id);
+        const studio = await Studio.findOne({ owner: req.user._id });
+
+        // Get all related talent/data for engines
+        const script = gameState.marketScripts.find(s => s.id === movie.scriptId) ||
+                       gameState.ownedScripts.find(s => s.id === movie.scriptId);
+
+        // Find in owned talent
+        const director = gameState.ownedDirectors.find(d => d.id === movie.directorId);
+        const leadActor = gameState.ownedActors.find(a => a.id === movie.leadActorId);
+        const crewTeam = gameState.ownedCrewTeams.find(c => c.id === movie.crewTeamId);
+
+        // Find Writer (might be in history or owned writers)
+        const writer = gameState.ownedWriters.find(w => w.id === script?.writerId);
+
+        // 1. Generate Reviews
+        const reviews = generateReviews(movie, script, director, leadActor, crewTeam);
+        movie.criticScore = reviews.criticScore;
+        movie.criticLabel = reviews.criticLabel;
+        movie.audienceScore = reviews.audienceScore;
+        movie.audienceLabel = reviews.audienceLabel;
+
+        // 2. Generate Box Office
+        const boxOffice = generateBoxOffice(movie, leadActor, director);
+        Object.assign(movie, boxOffice);
+
+        // 3. Update Studio Growth (Money handled here, Fans/Prestige inside)
+        const growth = processStudioGrowth(gameState, studio, movie);
+
+        // 4. Update Careers
+        processCareerImpact(gameState, movie, writer, director, leadActor, crewTeam);
+
+        // 5. Finalize Movie Status
+        movie.status = "RELEASED";
+        movie.releaseWeek = gameState.currentWeek;
+
+        // Move to history in GameState if needed (already stored in Movie collection, but GameState might have a ref array)
+        if (!gameState.movieHistory) gameState.movieHistory = [];
+        gameState.movieHistory.push(movie._id);
+
+        // Remove from active movies
+        gameState.activeMovies = gameState.activeMovies.filter(mId => mId.toString() !== movie._id.toString());
+
+        // Notifications
+        addNotification(gameState, `"${movie.title}" released! Critic Score: ${movie.criticScore} (${movie.criticLabel})`);
+        addNotification(gameState, `"${movie.title}" earned ₹${movie.worldwideGross.toLocaleString()} worldwide. Verdict: ${movie.verdict}`);
+
+        await movie.save();
+        await studio.save();
+        await gameState.save();
+
+        res.status(200).json({ success: true, movie, growth });
+    } catch (error) {
+        console.error("Release Movie Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getReleasedMovies = async (req, res) => {
+    try {
+        const gameState = await findGameState(req.user._id);
+        if (!gameState) return res.status(404).json({ success: false, message: "Game state not found" });
+
+        const movies = await Movie.find({ studioId: gameState.studioId || { $exists: true }, status: "RELEASED" })
+            .sort({ createdAt: -1 });
+
         res.status(200).json({ success: true, movies });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

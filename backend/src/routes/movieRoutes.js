@@ -10,6 +10,8 @@ const router = express.Router();
 
 router.post("/", protect, createMovie);
 router.get("/active", protect, getActiveMovies);
+router.get("/released", protect, getReleasedMovies);
+router.post("/:id/release", protect, releaseMovie);
 router.get("/:id", protect, getMovieDetails);
 
 export default router;
