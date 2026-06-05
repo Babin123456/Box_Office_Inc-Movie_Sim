@@ -6,6 +6,7 @@ import {
   calculateDirectorReplacementPenalty,
 } from "../services/director/directorContractService.js";
 import { generateDirectors } from "../services/director/directorGenerator.js";
+import { buildDirectorProfile } from "../services/director/directorProfileService.js";
 
 const findGameState = async (userId) => GameState.findOne({ user: userId });
 
@@ -79,6 +80,43 @@ export const getOwnedDirectors = async (req, res) => {
     res.status(200).json({
       success: true,
       directors: gameState.ownedDirectors || [],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+export const getDirectorProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const gameState = await findGameState(req.user._id);
+
+    if (!gameState) {
+      return res.status(404).json({
+        success: false,
+        message: "Game state not found",
+      });
+    }
+
+    const director =
+      gameState.ownedDirectors?.find((candidate) => candidate.id === id) ||
+      gameState.marketDirectors?.find((candidate) => candidate.id === id) ||
+      gameState.retiredDirectors?.find((candidate) => candidate.id === id);
+
+    if (!director) {
+      return res.status(404).json({
+        success: false,
+        message: "Director not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      profile: buildDirectorProfile(director, gameState.currentWeek),
     });
   } catch (error) {
     res.status(500).json({

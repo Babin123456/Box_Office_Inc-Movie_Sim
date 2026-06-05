@@ -9,6 +9,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Scripts from "./pages/scripts/Scripts";
 import Writers from "./pages/writers/Writers";
 import Directors from "./pages/directors/Directors";
+import DirectorProfile from "./pages/directors/DirectorProfile";
 import WriterProfile from "./pages/writers/WriterProfile";
 import Notifications from "./pages/notifications/Notifications";
 import Settings from "./pages/settings/Settings";
@@ -62,6 +63,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Directors />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/directors/:id"
+          element={
+            <ProtectedRoute>
+              <DirectorProfile />
             </ProtectedRoute>
           }
         />

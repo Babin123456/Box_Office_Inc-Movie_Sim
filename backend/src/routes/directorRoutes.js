@@ -3,6 +3,7 @@ import express from "express";
 import {
   getMarketDirectors,
   getOwnedDirectors,
+  getDirectorProfile,
   hireDirector,
   fireDirector,
   replaceDirector,
@@ -15,6 +16,8 @@ const router = express.Router();
 router.get("/", protect, getMarketDirectors);
 
 router.get("/owned", protect, getOwnedDirectors);
+
+router.get("/:id", protect, getDirectorProfile);
 
 router.post("/hire/:index", protect, hireDirector);
 

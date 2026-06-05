@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const rarityStyles = {
   Common: "bg-slate-500/20 text-slate-300 border border-slate-500/30",
   Uncommon: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
@@ -43,9 +45,12 @@ const DirectorCard = ({ director, index, mode, onHire, onFire }) => {
           className="h-24 w-24 rounded-full border border-slate-700 bg-slate-800"
         />
 
-        <h2 className="mt-4 text-center text-xl font-bold text-white">
+        <Link
+          to={`/directors/${director.id}`}
+          className="mt-4 text-center text-xl font-bold text-white transition hover:text-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 focus:ring-offset-slate-950"
+        >
           {director.name}
-        </h2>
+        </Link>
 
         <p className="text-sm text-slate-400">{director.status}</p>
         <p className="mt-2 text-xs text-slate-500">
