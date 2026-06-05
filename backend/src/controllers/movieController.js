@@ -7,6 +7,7 @@ import { processCareerImpact } from "../services/simulation/engines/careerImpact
 import { processStudioGrowth } from "../services/simulation/engines/studioGrowthEngine.js";
 import { addNotification } from "../services/simulation/helpers/notificationHelper.js";
 import { MARKETING_CAMPAIGNS } from "../constants/marketingCampaigns.js";
+import { generateMovieTitle } from "../services/movie/movieService.js";
 
 const findGameState = async (userId) => GameState.findOne({ user: userId });
 
@@ -178,6 +179,15 @@ export const getActiveMovies = async (req, res) => {
 
         const movies = await Movie.find({ _id: { $in: gameState.activeMovies } }).lean();
         res.status(200).json({ success: true, movies });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const generateTitle = async (req, res) => {
+    try {
+        const title = generateMovieTitle();
+        res.status(200).json({ success: true, title });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

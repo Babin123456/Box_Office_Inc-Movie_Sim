@@ -108,6 +108,7 @@ export const register = async (req, res) => {
     });
 
     user.studio = studio._id;
+    await user.save();
 
     const tokenBundle = await issueAuthTokens(res, user);
 
@@ -188,7 +189,13 @@ export const login = async (req, res) => {
     const tokenBundle = await issueAuthTokens(res, user);
     const populatedUser = await User.findById(user._id)
       .select("-password -refreshTokens")
-      .populate("studio");
+      .populate("studio")
+      .lean();
+
+    const gameState = await GameState.findOne({ user: user._id }).select("currentWeek").lean();
+    if (populatedUser && gameState) {
+        populatedUser.currentWeek = gameState.currentWeek;
+    }
 
     await recordAuthEvent(req, {
       user: user._id,
@@ -377,7 +384,13 @@ export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
       .select("-password -refreshTokens")
-      .populate("studio");
+      .populate("studio")
+      .lean();
+
+    const gameState = await GameState.findOne({ user: req.user._id }).select("currentWeek").lean();
+    if (user && gameState) {
+        user.currentWeek = gameState.currentWeek;
+    }
 
     res.status(200).json({
       success: true,

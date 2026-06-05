@@ -21,7 +21,27 @@ export const simulateWeek = async (req, res) => {
 
     // Run simulation multiple times
     for (let i = 0; i < numWeeks; i++) {
+      const prevMoney = studio.money || 0;
       await runWeeklySimulation(gameState, studio);
+
+      // Financial History Logging
+      studio.financialHistory = studio.financialHistory || [];
+      studio.financialHistory.push({
+          week: ((gameState.currentWeek - 2) % 52) + 1,
+          year: Math.floor((gameState.currentWeek - 2) / 52) + 1,
+          revenue: Math.max(0, studio.money - prevMoney), // Simple diff for now
+          expenses: Math.max(0, prevMoney - studio.money),
+          payroll: 0, // Should ideally be passed from engine
+          movieCosts: 0,
+          marketingCosts: 0,
+          profit: studio.money - prevMoney,
+          balance: studio.money
+      });
+
+      // Limit history size to 100 entries for performance
+      if (studio.financialHistory.length > 100) {
+          studio.financialHistory.shift();
+      }
     }
 
     await studio.save();

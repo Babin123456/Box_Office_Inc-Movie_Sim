@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import api from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
-import { Film, Users, PenTool, Briefcase, IndianRupee, Check } from "lucide-react";
+import { Film, Users, PenTool, Briefcase, IndianRupee, Check, Sparkles } from "lucide-react";
 
 const MARKETING_CAMPAIGNS = [
   { id: "trailer", name: "Trailer Campaign", cost: 100000, hypeBoost: 8 },
@@ -75,6 +75,15 @@ const CreateMovie = () => {
     return sum + (campaign?.cost || 0);
   }, 0);
 
+  const generateTitle = async () => {
+    try {
+        const res = await api.get("/movies/generate-title");
+        setFormData(prev => ({ ...prev, title: res.data.title }));
+    } catch (error) {
+        console.error("Failed to generate title");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
@@ -111,7 +120,16 @@ const CreateMovie = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-[#111827] border border-slate-800 rounded-3xl p-8 space-y-8">
             <div>
-              <label className="block text-slate-300 mb-2 font-semibold">Movie Title</label>
+              <label className="block text-slate-300 mb-2 font-semibold flex justify-between items-center">
+                <span>Movie Title</span>
+                <button
+                    type="button"
+                    onClick={generateTitle}
+                    className="text-violet-400 hover:text-violet-300 text-xs font-black uppercase flex items-center gap-1 transition"
+                >
+                    <Sparkles size={14} /> Generate
+                </button>
+              </label>
               <input
                 type="text"
                 required

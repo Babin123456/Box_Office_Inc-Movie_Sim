@@ -3,6 +3,7 @@ import express from "express";
 import {
   getMarketActors,
   getOwnedActors,
+  getActorProfile,
   hireActor,
   fireActor,
 } from "../controllers/actorController.js";

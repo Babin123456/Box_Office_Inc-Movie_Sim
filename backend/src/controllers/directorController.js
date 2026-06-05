@@ -264,7 +264,7 @@ export const getDirectorProfile = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      profile: buildDirectorProfile(director, gameState.currentWeek),
+      director: buildDirectorProfile(director, gameState.currentWeek),
     });
   } catch (error) {
     res.status(500).json({

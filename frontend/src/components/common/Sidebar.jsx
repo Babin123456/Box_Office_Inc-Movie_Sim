@@ -9,6 +9,9 @@ import {
   Bell,
   ShieldCheck,
   Settings,
+  Layers,
+  Scale,
+  IndianRupee,
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";

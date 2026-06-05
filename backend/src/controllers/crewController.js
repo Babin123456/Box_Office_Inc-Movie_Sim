@@ -61,6 +61,24 @@ export const hireCrewTeam = async (req, res) => {
   }
 };
 
+export const getCrewProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const gameState = await findGameState(req.user._id);
+    if (!gameState) return res.status(404).json({ success: false, message: "Game state not found" });
+
+    const crew =
+      gameState.ownedCrewTeams?.find((c) => c.id === id) ||
+      gameState.marketCrewTeams?.find((c) => c.id === id);
+
+    if (!crew) return res.status(404).json({ success: false, message: "Crew team not found" });
+
+    return res.status(200).json({ success: true, profile: crew });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const fireCrewTeam = async (req, res) => {
   try {
     const { id } = req.params;

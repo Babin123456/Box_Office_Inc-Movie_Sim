@@ -69,14 +69,7 @@ export const processWritingProjects = async (gameState, studio) => {
         currentWeek: gameState.currentWeek,
       });
 
-      const salaryProgression = applyWriterSalaryProgression({
-        writer,
-        script,
-        currentWeek: gameState.currentWeek,
-        wasHit,
-        wasFlop,
-        awardsWon: awardsWon.length,
-      });
+      // Salary progression and hit/flop tracking moved to Release pipeline.
 
       const creationDate = new Date();
 
@@ -109,13 +102,6 @@ export const processWritingProjects = async (gameState, studio) => {
           `${writer.name} won ${award.awardName} for "${script.title}".`
         );
       });
-
-      if (salaryProgression.changed) {
-        addNotification(
-          gameState,
-          `${writer.name}'s salary changed from ₹${salaryProgression.previousSalary.toLocaleString()} to ₹${salaryProgression.nextSalary.toLocaleString()}.`
-        );
-      }
 
       const releasedWriter = writer.toObject ? writer.toObject() : { ...writer };
 
