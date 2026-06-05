@@ -9,6 +9,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Scripts from "./pages/scripts/Scripts";
 import Writers from "./pages/writers/Writers";
 import Directors from "./pages/directors/Directors";
+import Actors from "./pages/actors/Actors";
 import DirectorProfile from "./pages/directors/DirectorProfile";
 import WriterProfile from "./pages/writers/WriterProfile";
 import Notifications from "./pages/notifications/Notifications";
@@ -54,6 +55,15 @@ function App() {
           element={
             <ProtectedRoute>
               <WriterProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/actors"
+          element={
+            <ProtectedRoute>
+              <Actors />
             </ProtectedRoute>
           }
         />

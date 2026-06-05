@@ -38,6 +38,11 @@ const Sidebar = () => {
       icon: Users,
     },
     {
+      name: "Actors",
+      path: "/actors",
+      icon: Users,
+    },
+    {
       name: "Notifications",
       path: "/notifications",
       icon: Bell,
