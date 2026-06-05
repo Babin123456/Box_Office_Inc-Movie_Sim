@@ -5,6 +5,7 @@ import GameState from "../models/GameState.js";
 import { hashPassword, comparePassword } from "../services/auth/authService.js";
 import { generateDirectors } from "../services/director/directorGenerator.js";
 import { generateActors } from "../services/actor/actorGenerator.js";
+import { generateCrewTeams } from "../services/crew/crewGenerator.js";
 import {
   AUTH_EVENTS,
   getAuthDiagnosticsForUser,
@@ -103,6 +104,7 @@ export const register = async (req, res) => {
       user: user._id,
       marketDirectors: generateDirectors(100),
       marketActors: generateActors(1000),
+      marketCrewTeams: generateCrewTeams(50),
     });
 
     user.studio = studio._id;

@@ -10,6 +10,10 @@ import Scripts from "./pages/scripts/Scripts";
 import Writers from "./pages/writers/Writers";
 import Directors from "./pages/directors/Directors";
 import Actors from "./pages/actors/Actors";
+import CrewMarket from "./pages/crew/CrewMarket";
+import OwnedCrew from "./pages/crew/OwnedCrew";
+import ActiveMovies from "./pages/movies/ActiveMovies";
+import CreateMovie from "./pages/movies/CreateMovie";
 import DirectorProfile from "./pages/directors/DirectorProfile";
 import WriterProfile from "./pages/writers/WriterProfile";
 import Notifications from "./pages/notifications/Notifications";
@@ -29,6 +33,23 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/movies"
+          element={
+            <ProtectedRoute>
+              <ActiveMovies />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movies/create"
+          element={
+            <ProtectedRoute>
+              <CreateMovie />
             </ProtectedRoute>
           }
         />
@@ -82,6 +103,23 @@ function App() {
           element={
             <ProtectedRoute>
               <DirectorProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/crew"
+          element={
+            <ProtectedRoute>
+              <CrewMarket />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/crew/owned"
+          element={
+            <ProtectedRoute>
+              <OwnedCrew />
             </ProtectedRoute>
           }
         />

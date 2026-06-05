@@ -799,6 +799,58 @@ const gameStateSchema = new mongoose.Schema(
       },
     ],
 
+    marketCrewTeams: [
+      {
+        id: String,
+        name: String,
+        technicalQuality: Number,
+        musicQuality: Number,
+        vfxQuality: Number,
+        creativity: Number,
+        reliability: Number,
+        reputation: Number,
+        morale: Number,
+        salary: Number,
+        rarity: String,
+        age: Number,
+        discovery: Number,
+        status: {
+          type: String,
+          enum: ["AVAILABLE", "BUSY"],
+          default: "AVAILABLE",
+        },
+        busyUntilWeek: Number,
+        hiredAt: Date,
+        contractYears: Number,
+      },
+    ],
+
+    ownedCrewTeams: [
+      {
+        id: String,
+        name: String,
+        technicalQuality: Number,
+        musicQuality: Number,
+        vfxQuality: Number,
+        creativity: Number,
+        reliability: Number,
+        reputation: Number,
+        morale: Number,
+        salary: Number,
+        rarity: String,
+        age: Number,
+        discovery: Number,
+        status: {
+          type: String,
+          enum: ["AVAILABLE", "BUSY"],
+          default: "AVAILABLE",
+        },
+        busyUntilWeek: Number,
+        hiredAt: Date,
+        contractYears: Number,
+      },
+    ],
+
     retiredActors: [mongoose.Schema.Types.Mixed],
 
     actorAwardYearsProcessed: [Number],

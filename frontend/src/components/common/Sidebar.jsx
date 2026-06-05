@@ -23,6 +23,11 @@ const Sidebar = () => {
       icon: LayoutDashboard,
     },
     {
+      name: "Movies",
+      path: "/movies",
+      icon: Film,
+    },
+    {
       name: "Scripts",
       path: "/scripts",
       icon: Film,
@@ -41,6 +46,16 @@ const Sidebar = () => {
       name: "Actors",
       path: "/actors",
       icon: Users,
+    },
+    {
+      name: "Crew Market",
+      path: "/crew",
+      icon: Users,
+    },
+    {
+      name: "Owned Crew",
+      path: "/crew/owned",
+      icon: Building2,
     },
     {
       name: "Notifications",
