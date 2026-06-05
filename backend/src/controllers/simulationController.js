@@ -4,39 +4,51 @@ import { runWeeklySimulation } from "../services/simulation/runWeeklySimulation.
 
 export const simulateWeek = async (req, res) => {
   try {
-    const gameState = await GameState.findOne({
-      user: req.user._id,
-    });
+    const { weeks = 1 } = req.body;
+    const numWeeks = Math.min(52, Math.max(1, Number(weeks)));
 
-    if (!gameState) {
-      return res.status(404).json({
-        message: "Game state not found",
-      });
+    const gameState = await GameState.findOne({ user: req.user._id });
+    const studio = await Studio.findOne({ owner: req.user._id });
+
+    if (!gameState || !studio) {
+      return res.status(404).json({ message: "Game state or studio not found" });
     }
 
-    const studio = await Studio.findOne({
-      owner: req.user._id,
-    });
+    const startWeek = gameState.currentWeek;
+    const startFans = studio.fans || 0;
+    const startPrestige = studio.prestige || 0;
+    const initialNotificationCount = (gameState.notifications || []).length;
 
-    if (!studio) {
-      return res.status(404).json({
-        message: "Studio not found",
-      });
+    // Run simulation multiple times
+    for (let i = 0; i < numWeeks; i++) {
+      await runWeeklySimulation(gameState, studio);
     }
-
-    await runWeeklySimulation(gameState, studio);
 
     await studio.save();
     await gameState.save();
 
-    res.status(200).json({
-      message: "Week simulated successfully",
+    const endFans = studio.fans || 0;
+    const endPrestige = studio.prestige || 0;
+    const newNotifications = (gameState.notifications || []).slice(initialNotificationCount);
 
+    // Summary data
+    const summary = {
+      weeksSimulated: numWeeks,
+      startWeek,
+      endWeek: gameState.currentWeek,
+      fansGained: endFans - startFans,
+      prestigeGained: endPrestige - startPrestige,
+      notificationCount: newNotifications.length,
+      newNotifications: newNotifications.slice(-10) // Last 10
+    };
+
+    res.status(200).json({
+      message: `${numWeeks} week(s) simulated successfully`,
       currentWeek: gameState.currentWeek,
+      summary
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Simulation failed",
-    });
+    console.error("Simulation Error:", error);
+    res.status(500).json({ message: "Simulation failed" });
   }
 };

@@ -81,13 +81,18 @@ const ActiveMovies = () => {
                     <span>Hype: {movie.hype}</span>
                   </div>
 
-                  <div className="flex gap-3 pt-2">
-                    <Link
-                      to={`/movies/${movie._id}`}
-                      className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition"
-                    >
-                      <Info size={16} /> Details
-                    </Link>
+                  <div className="flex justify-between items-center pt-2">
+                    <div className="text-slate-400 text-xs font-bold uppercase tracking-wider italic">
+                        {movie.remainingWeeks} Weeks Remaining
+                    </div>
+                    <div className="flex gap-3">
+                        <Link
+                        to={`/movies/${movie._id}`}
+                        className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition"
+                        >
+                        <Info size={16} /> Details
+                        </Link>
+                    </div>
                   </div>
                 </div>
               </div>

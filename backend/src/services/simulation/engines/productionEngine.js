@@ -57,6 +57,10 @@ export const processProduction = async (gameState, studio) => {
 
     movie.productionProgress = Math.min(100, Math.round(((currentCompleted + movie.weeksInStage) / totalTarget) * 100));
 
+    // Calculate remaining weeks
+    const currentAbsoluteWeeks = currentCompleted + movie.weeksInStage;
+    movie.remainingWeeks = Math.max(0, totalTarget - currentAbsoluteWeeks);
+
     if (movie.weeksInStage >= stageInfo.duration) {
       const oldStatus = movie.status;
       movie.status = stageInfo.next;

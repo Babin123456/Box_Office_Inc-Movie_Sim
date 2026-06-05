@@ -41,6 +41,17 @@ export const createMovie = async (req, res) => {
     if (!leadActor) return res.status(404).json({ success: false, message: "Lead actor not found" });
     if (leadActor.status !== "AVAILABLE") return res.status(400).json({ success: false, message: "Lead actor is busy" });
 
+    // Validate Supporting Actors
+    const supportingActors = [];
+    if (supportingActorIds && Array.isArray(supportingActorIds)) {
+        for (const actorId of supportingActorIds) {
+            const actor = gameState.ownedActors.find(a => a.id === actorId);
+            if (!actor) return res.status(404).json({ success: false, message: `Supporting actor ${actorId} not found` });
+            if (actor.status !== "AVAILABLE") return res.status(400).json({ success: false, message: `Supporting actor ${actor.name} is busy` });
+            supportingActors.push(actor);
+        }
+    }
+
     // Validate Crew Team
     const crewTeam = gameState.ownedCrewTeams.find(c => c.id === req.body.crewTeamId);
     if (!crewTeam) return res.status(404).json({ success: false, message: "Crew team not found" });
@@ -83,6 +94,22 @@ export const createMovie = async (req, res) => {
       marketingHypeBoost
     ));
 
+    const totalProductionWeeks = 20; // 4 + 10 + 6
+    const scriptCost = script.price || 0;
+    const directorCost = director.salary * totalProductionWeeks;
+    const leadActorCost = leadActor.salary * totalProductionWeeks;
+    const crewCost = crewTeam.salary * totalProductionWeeks;
+
+    let supportingActorCost = 0;
+    if (supportingActorIds && Array.isArray(supportingActorIds)) {
+        supportingActorIds.forEach(id => {
+            const act = gameState.ownedActors.find(a => a.id === id);
+            if (act) supportingActorCost += act.salary * totalProductionWeeks;
+        });
+    }
+
+    const totalBudget = scriptCost + directorCost + leadActorCost + supportingActorCost + crewCost + marketingBudget;
+
     const movie = await Movie.create({
       title,
       studioId: studio._id,
@@ -91,14 +118,23 @@ export const createMovie = async (req, res) => {
       leadActorId,
       supportingActorIds: supportingActorIds || [],
       crewTeamId: crewTeam.id,
-      budget: 0, // Will accumulate or be set
+      budget: totalBudget,
+      budgetBreakdown: {
+        scriptCost,
+        directorCost,
+        leadActorCost,
+        supportingActorCost,
+        crewCost,
+        marketingCost: marketingBudget
+      },
       marketingBudget,
       marketingCampaigns: selectedCampaigns,
       quality,
       hype,
       status: "PRE_PRODUCTION",
       createdWeek: gameState.currentWeek,
-      productionProgress: 0
+      productionProgress: 0,
+      remainingWeeks: totalProductionWeeks
     });
 
     // Update statuses
@@ -107,6 +143,12 @@ export const createMovie = async (req, res) => {
     director.busyUntilWeek = gameState.currentWeek + 20; // Approx
     leadActor.status = "BUSY";
     leadActor.busyUntilWeek = gameState.currentWeek + 20;
+
+    supportingActors.forEach(actor => {
+        actor.status = "BUSY";
+        actor.busyUntilWeek = gameState.currentWeek + 20;
+    });
+
     crewTeam.status = "BUSY";
     crewTeam.busyUntilWeek = gameState.currentWeek + 20;
 

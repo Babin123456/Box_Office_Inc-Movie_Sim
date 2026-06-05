@@ -119,6 +119,13 @@ const gameStateSchema = new mongoose.Schema(
       },
     ],
 
+    movieHistory: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Movie",
+      },
+    ],
+
     preProductionMovies: [
       {
         id: String,

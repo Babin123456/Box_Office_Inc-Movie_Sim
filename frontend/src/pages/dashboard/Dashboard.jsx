@@ -8,10 +8,14 @@ import { setUser } from "../../features/auth/authSlice";
 
 import DashboardLayout from "../../layouts/DashboardLayout";
 import StatCard from "../../components/common/StatCard";
+import SimulationSummaryModal from "../../components/simulation/SimulationSummaryModal";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [simulationSummary, setSimulationSummary] = useState(null);
+  const [customWeeks, setCustomWeeks] = useState(1);
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -28,14 +32,17 @@ const Dashboard = () => {
     fetchUser();
   }, [dispatch]);
 
-  const simulateWeek = async () => {
+  const runSimulation = async (weeks) => {
     if (loading) return;
     try {
       setLoading(true);
+      const res = await api.post("/simulation/next-week", { weeks });
+      setSimulationSummary(res.data.summary);
+      setShowSummary(true);
 
-      await api.post("/simulation/next-week");
-
-      window.location.reload();
+      // Refresh user data to show new stats
+      const userRes = await api.get("/auth/me");
+      dispatch(setUser(userRes.data.user));
     } catch (error) {
       alert(error?.response?.data?.message || "Simulation failed");
     } finally {
@@ -57,21 +64,40 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <button
-          onClick={simulateWeek}
-          disabled={loading}
-          className="
-  bg-violet-600
-  hover:bg-violet-700
-  px-6
-  py-3
-  rounded-xl
-  text-white
-  font-semibold
-"
-        >
-          {loading ? "Simulating..." : "Simulate Week"}
-        </button>
+        <div className="flex flex-wrap items-center gap-4 bg-[#111827] p-6 rounded-2xl border border-slate-800">
+          <div className="text-slate-400 font-bold uppercase text-xs tracking-widest mr-2">Advanced Controls</div>
+
+          <div className="flex gap-2">
+            {[1, 3, 5].map(w => (
+              <button
+                key={w}
+                disabled={loading}
+                onClick={() => runSimulation(w)}
+                className="bg-slate-800 hover:bg-violet-600 text-white px-4 py-2 rounded-xl font-bold transition disabled:opacity-50"
+              >
+                +{w} {w === 1 ? 'Week' : 'Weeks'}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 border-l border-slate-800 pl-4 ml-2">
+            <input
+              type="number"
+              min="1"
+              max="52"
+              value={customWeeks}
+              onChange={(e) => setCustomWeeks(e.target.value)}
+              className="w-16 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold outline-none focus:border-violet-500"
+            />
+            <button
+              disabled={loading}
+              onClick={() => runSimulation(customWeeks)}
+              className="bg-violet-600 hover:bg-violet-700 text-white px-5 py-2 rounded-xl font-bold transition disabled:opacity-50"
+            >
+              {loading ? "Simulating..." : "Run Custom"}
+            </button>
+          </div>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
@@ -135,6 +161,13 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {showSummary && (
+        <SimulationSummaryModal
+          summary={simulationSummary}
+          onClose={() => setShowSummary(false)}
+        />
+      )}
     </DashboardLayout>
   );
 };

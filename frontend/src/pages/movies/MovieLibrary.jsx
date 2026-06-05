@@ -33,12 +33,24 @@ const MovieLibrary = () => {
         case "profitDesc": result.sort((a, b) => b.profit - a.profit); break;
         case "criticScoreDesc": result.sort((a, b) => b.criticScore - a.criticScore); break;
         case "audienceScoreDesc": result.sort((a, b) => b.audienceScore - a.audienceScore); break;
-        case "releaseWeekDesc": result.sort((a, b) => b.releaseWeek - a.releaseWeek); break;
+        case "releaseWeekDesc": result.sort((a, b) => (b.releaseWeek || 0) - (a.releaseWeek || 0)); break;
         default: break;
     }
 
     return result;
   }, [movies, search, sortBy]);
+
+  const getVerdictColor = (verdict) => {
+    switch(verdict) {
+        case 'LEGENDARY': return 'bg-orange-600 text-white';
+        case 'BLOCKBUSTER': return 'bg-purple-600 text-white';
+        case 'HIT': return 'bg-green-600 text-white';
+        case 'AVERAGE': return 'bg-slate-600 text-white';
+        case 'FLOP': return 'bg-red-600 text-white';
+        case 'DISASTER': return 'bg-red-900 text-white';
+        default: return 'bg-slate-700 text-slate-300';
+    }
+  }
 
   return (
     <DashboardLayout>
@@ -98,10 +110,7 @@ const MovieLibrary = () => {
                         <div className="text-xs text-slate-500">Released Week {movie.releaseWeek}</div>
                     </td>
                     <td className="px-4 py-4">
-                        <span className={`px-2 py-1 rounded text-[10px] font-bold ${
-                            ["HIT", "BLOCKBUSTER", "LEGENDARY"].includes(movie.verdict) ? 'bg-green-500/20 text-green-500' :
-                            ["FLOP", "DISASTER"].includes(movie.verdict) ? 'bg-red-500/20 text-red-500' : 'bg-slate-500/20 text-slate-400'
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-tighter ${getVerdictColor(movie.verdict)}`}>
                             {movie.verdict}
                         </span>
                     </td>

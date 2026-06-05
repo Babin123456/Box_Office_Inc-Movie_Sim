@@ -40,6 +40,16 @@ const movieSchema = new mongoose.Schema(
     createdWeek: { type: Number, required: true },
     releaseWeek: { type: Number, default: null },
     productionProgress: { type: Number, default: 0 },
+    remainingWeeks: { type: Number, default: 0 },
+
+    budgetBreakdown: {
+        scriptCost: { type: Number, default: 0 },
+        directorCost: { type: Number, default: 0 },
+        leadActorCost: { type: Number, default: 0 },
+        supportingActorCost: { type: Number, default: 0 },
+        crewCost: { type: Number, default: 0 },
+        marketingCost: { type: Number, default: 0 },
+    },
 
     // Track weeks in each stage
     weeksInStage: { type: Number, default: 0 },
