@@ -39,15 +39,15 @@ const ProductionQueue = () => {
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-8 pb-20">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start md:items-center gap-4">
             <div>
-                <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter italic">Production Queue</h1>
-                <p className="text-slate-400 mt-2">Active project management and scheduling.</p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter">Production Queue</h1>
+                <p className="text-slate-400 mt-1 text-sm sm:text-base">Active project management and scheduling.</p>
             </div>
             <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-[#111827] border border-slate-800 rounded-xl px-4 py-2 text-white text-sm font-bold outline-none focus:border-violet-600"
+                className="bg-[#111827] border border-slate-800 rounded-xl px-4 py-2 text-white text-sm font-bold outline-none focus:border-violet-600 self-start sm:self-auto w-full sm:w-auto cursor-pointer"
             >
                 <option value="remainingWeeks">Sort: Remaining Time</option>
                 <option value="budget">Sort: Highest Budget</option>

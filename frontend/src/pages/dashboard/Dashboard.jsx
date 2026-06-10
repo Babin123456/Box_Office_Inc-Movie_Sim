@@ -101,45 +101,46 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Hero Banner */}
-        <div className="rounded-3xl bg-linear-to-r from-violet-700 to-purple-500 p-8">
-          <h1 className="text-4xl font-bold text-white">
+        <div className="rounded-3xl bg-linear-to-r from-violet-700 to-purple-500 p-6 sm:p-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
             Build Your Dream Studio
           </h1>
 
-          <p className="text-slate-100 mt-3">
+          <p className="text-slate-100 mt-2 text-sm sm:text-base">
             Create Blockbusters. Become a Legend.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 bg-[#111827] p-6 rounded-2xl border border-slate-800">
-          <div className="text-slate-400 font-bold uppercase text-xs tracking-widest mr-2">Advanced Controls</div>
+        {/* Advanced Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-[#111827] p-4 sm:p-6 rounded-2xl border border-slate-800">
+          <div className="text-slate-400 font-bold uppercase text-xs tracking-widest">Advanced Controls</div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {[1, 3, 5].map(w => (
               <button
                 key={w}
                 disabled={loading}
                 onClick={() => runSimulation(w)}
-                className="bg-slate-800 hover:bg-violet-600 text-white px-4 py-2 rounded-xl font-bold transition disabled:opacity-50"
+                className="bg-slate-800 hover:bg-violet-600 text-white px-3 py-2 sm:px-4 rounded-xl font-bold transition disabled:opacity-50 text-sm sm:text-base cursor-pointer"
               >
                 +{w} {w === 1 ? 'Week' : 'Weeks'}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center gap-2 border-l border-slate-800 pl-4 ml-2">
+          <div className="flex items-center gap-2 border-t sm:border-t-0 sm:border-l border-slate-800 pt-4 sm:pt-0 sm:pl-4 w-full sm:w-auto">
             <input
               type="number"
               min="1"
               max="52"
               value={customWeeks}
               onChange={(e) => setCustomWeeks(e.target.value)}
-              className="w-16 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold outline-none focus:border-violet-500"
+              className="w-16 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold outline-none focus:border-violet-500 text-sm sm:text-base"
             />
             <button
               disabled={loading}
               onClick={() => runSimulation(customWeeks)}
-              className="bg-violet-600 hover:bg-violet-700 text-white px-5 py-2 rounded-xl font-bold transition disabled:opacity-50"
+              className="flex-1 sm:flex-none bg-violet-600 hover:bg-violet-700 text-white px-4 sm:px-5 py-2 rounded-xl font-bold transition disabled:opacity-50 text-sm sm:text-base cursor-pointer"
             >
               {loading ? "Simulating..." : "Run Custom"}
             </button>
@@ -147,15 +148,15 @@ const Dashboard = () => {
         </div>
 
         {/* Timeline Display */}
-        <div className="bg-[#111827] border border-slate-800 rounded-2xl p-6 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-                <div className="bg-violet-600/20 text-violet-400 p-3 rounded-xl"><Calendar size={24} /></div>
+        <div className="bg-[#111827] border border-slate-800 rounded-2xl p-4 sm:p-6 flex justify-between items-center">
+            <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-violet-600/20 text-violet-400 p-2.5 sm:p-3 rounded-xl shrink-0"><Calendar size={20} className="sm:w-6 sm:h-6" /></div>
                 <div>
-                    <div className="text-white font-black text-2xl tracking-tighter">YEAR {currentYear} • WEEK {currentWeekInYear}</div>
-                    <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">Global Industry Timeline</div>
+                    <div className="text-white font-black text-lg sm:text-xl md:text-2xl tracking-tighter">YEAR {currentYear} • WEEK {currentWeekInYear}</div>
+                    <div className="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Global Industry Timeline</div>
                 </div>
             </div>
-            <div className="hidden md:block w-64 bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div className="hidden md:block w-64 bg-slate-800 h-2 rounded-full overflow-hidden shrink-0">
                 <div
                     className="bg-violet-500 h-full transition-all duration-1000"
                     style={{ width: `${(currentWeekInYear / 52) * 100}%` }}
@@ -164,13 +165,13 @@ const Dashboard = () => {
         </div>
 
         {/* Studio Overview Redesigned */}
-        <div className="bg-[#111827] rounded-2xl p-6 border border-slate-800">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+        <div className="bg-[#111827] rounded-2xl p-4 sm:p-6 border border-slate-800">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Building className="text-violet-400" />
             Studio Overview
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Studio Name Card */}
             <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700 hover:border-violet-500 transition">
               <div className="flex items-center gap-3 mb-2">
@@ -179,7 +180,7 @@ const Dashboard = () => {
                 </div>
                 <span className="text-slate-400 text-sm font-medium">Studio Name</span>
               </div>
-              <h3 className="text-xl font-bold text-white">{user?.studio?.name || 'My Studio'}</h3>
+              <h3 className="text-xl font-bold text-white truncate">{user?.studio?.name || 'My Studio'}</h3>
             </div>
 
             {/* Money Card */}
@@ -190,7 +191,7 @@ const Dashboard = () => {
                 </div>
                 <span className="text-slate-400 text-sm font-medium">Money</span>
               </div>
-              <h3 className="text-xl font-bold text-white">₹{user?.studio?.money?.toLocaleString() || 0}</h3>
+              <h3 className="text-xl font-bold text-white truncate">₹{user?.studio?.money?.toLocaleString() || 0}</h3>
             </div>
 
             {/* Prestige Card */}
@@ -201,7 +202,7 @@ const Dashboard = () => {
                 </div>
                 <span className="text-slate-400 text-sm font-medium">Prestige</span>
               </div>
-              <h3 className="text-xl font-bold text-white">{user?.studio?.prestige?.toLocaleString() || 0}</h3>
+              <h3 className="text-xl font-bold text-white truncate">{user?.studio?.prestige?.toLocaleString() || 0}</h3>
             </div>
 
             {/* Fans Card */}
@@ -212,7 +213,7 @@ const Dashboard = () => {
                 </div>
                 <span className="text-slate-400 text-sm font-medium">Fans</span>
               </div>
-              <h3 className="text-xl font-bold text-white">{user?.studio?.fans?.toLocaleString() || 0}</h3>
+              <h3 className="text-xl font-bold text-white truncate">{user?.studio?.fans?.toLocaleString() || 0}</h3>
             </div>
 
             {/* Studio Level Card */}
@@ -231,8 +232,8 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Events Timeline */}
-        <div className="bg-[#111827] rounded-2xl p-6 border border-slate-800">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+        <div className="bg-[#111827] rounded-2xl p-4 sm:p-6 border border-slate-800">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Clock className="text-violet-400" />
             Recent Events
           </h2>
@@ -248,7 +249,7 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="flex-1 border-l-2 border-slate-700 pl-4">
-                  <p className="text-white font-medium">
+                  <p className="text-white font-medium text-sm sm:text-base">
                     {event.message}
                   </p>
                   <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
