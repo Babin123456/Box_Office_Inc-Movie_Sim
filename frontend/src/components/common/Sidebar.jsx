@@ -12,11 +12,12 @@ import {
   Layers,
   Scale,
   IndianRupee,
+  X,
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const menuItems = [
@@ -123,42 +124,68 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-72 bg-[#0B1020] border-r border-slate-800 p-6 flex flex-col">
-      <h1 className="text-3xl font-bold text-violet-500 mb-10">CineVerse</h1>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      <nav className="space-y-2">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-50 w-72 bg-[#0B1020] border-r border-slate-800 p-6 flex flex-col
+          transition-transform duration-300 ease-in-out
+          md:static md:translate-x-0
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
+        <div className="flex justify-between items-center mb-10 shrink-0">
+          <h1 className="text-3xl font-bold text-violet-500">CineVerse</h1>
+          <button
+            onClick={onClose}
+            className="md:hidden text-slate-400 hover:text-white p-1 cursor-pointer"
+          >
+            <X size={24} />
+          </button>
+        </div>
 
-          const active = location.pathname === item.path;
+        <nav className="space-y-2 overflow-y-auto pr-1 flex-1 scrollbar-thin">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`
-                flex
-                items-center
-                gap-3
-                p-3
-                rounded-xl
-                transition-all
-                duration-200
-                ${
-                  active
-                    ? "bg-violet-600 text-white"
-                    : "text-slate-300 hover:bg-slate-800"
-                }
-              `}
-            >
-              <Icon size={20} />
+            const active = location.pathname === item.path;
 
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    </aside>
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={onClose}
+                className={`
+                  flex
+                  items-center
+                  gap-3
+                  p-3
+                  rounded-xl
+                  transition-all
+                  duration-200
+                  ${
+                    active
+                      ? "bg-violet-600 text-white"
+                      : "text-slate-300 hover:bg-slate-800"
+                  }
+                `}
+              >
+                <Icon size={20} />
+
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 };
 
