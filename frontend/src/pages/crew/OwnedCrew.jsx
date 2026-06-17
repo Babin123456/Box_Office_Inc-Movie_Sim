@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import api from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { Users, Briefcase } from "lucide-react";
+import SkeletonGrid from "../../components/common/SkeletonGrid";
 
 const OwnedCrew = () => {
   const [crewTeams, setCrewTeams] = useState([]);
@@ -44,7 +45,7 @@ const OwnedCrew = () => {
         </div>
 
         {loading ? (
-          <div className="text-white text-center py-10">Loading your crew...</div>
+          <SkeletonGrid />
         ) : crewTeams.length === 0 ? (
             <div className="bg-[#111827] border border-slate-800 rounded-2xl p-12 text-center">
                 <Briefcase size={48} className="text-slate-600 mx-auto mb-4" />

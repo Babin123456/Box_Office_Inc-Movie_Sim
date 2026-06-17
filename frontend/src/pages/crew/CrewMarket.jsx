@@ -8,6 +8,7 @@ import {
   setCrewFilters,
   resetCrewFilters,
 } from "../../features/talent/talentSlice";
+import SkeletonGrid from "../../components/common/SkeletonGrid";
 
 // Average of a crew team's four skill stats — used for the quality filter
 // and the overall-quality sort so "quality" means the same thing everywhere.
@@ -214,7 +215,7 @@ const CrewMarket = () => {
         </div>
 
         {loading ? (
-          <div className="text-white text-center py-10">Loading crew teams...</div>
+          <SkeletonGrid />
         ) : filteredCrew.length === 0 ? (
           <div className="rounded-2xl border border-slate-800 bg-[#111827] p-12 text-center">
             <h2 className="mb-3 text-2xl font-bold text-white">No Crew Teams</h2>
