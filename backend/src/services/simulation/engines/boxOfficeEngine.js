@@ -15,10 +15,10 @@
  * Converts a return-on-investment (ROI) ratio into a human-readable verdict.
  *
  * Thresholds:
- * - ROI < -0.5   → "DISASTER"
+ * - ROI < -0.4   → "DISASTER"
  * - ROI < 0      → "FLOP"
- * - ROI ≤ 0.25   → "AVERAGE"
- * - ROI ≤ 1.0    → "HIT"
+ * - ROI ≤ 0.3    → "AVERAGE"
+ * - ROI ≤ 1.2    → "HIT"
  * - ROI ≤ 3.0    → "BLOCKBUSTER"
  * - ROI > 3.0    → "LEGENDARY"
  *
@@ -26,10 +26,10 @@
  * @returns {"DISASTER"|"FLOP"|"AVERAGE"|"HIT"|"BLOCKBUSTER"|"LEGENDARY"} verdict
  */
 const getVerdict = (roi) => {
-  if (roi < -0.5) return "DISASTER";
+  if (roi < -0.4) return "DISASTER";
   if (roi < 0) return "FLOP";
-  if (roi <= 0.25) return "AVERAGE";
-  if (roi <= 1.0) return "HIT";
+  if (roi <= 0.3) return "AVERAGE";
+  if (roi <= 1.2) return "HIT";
   if (roi <= 3.0) return "BLOCKBUSTER";
   return "LEGENDARY";
 };
@@ -40,16 +40,16 @@ const getVerdict = (roi) => {
  * ## Calculation Flow
  *
  * 1. **Opening Weekend**
- *    - Base: ₹1,000,000 (flat floor)
- *    - + Star Power: actor popularity mapped to up to ₹500,000
- *    - + Marketing Boost: half the marketing budget
- *    - × Hype factor (0.5–1.5 range) and a ±20% random variance
+ *    - Base: Scaled based on production budget
+ *    - + Star Power: actor popularity mapped to budget scale
+ *    - + Marketing Boost: scaled by marketing budget
+ *    - × Hype factor and a random variance
  *    - × `marketMultiplier` (genre trend; defaults to 1 — neutral)
  *
  * 2. **Worldwide Gross**
- *    - Opening Weekend × a "legs" factor driven by audience score (4×)
- *      and critic score (1×), representing how long the film stays in cinemas.
- *    - An additional ±10% random variance is applied.
+ *    - Opening Weekend × a "legs" factor driven by audience score
+ *      and critic score, representing how long the film stays in cinemas.
+ *    - An additional random variance is applied.
  *
  * 3. **Domestic / International Split**
  *    - Domestic = 45% of worldwide gross.
@@ -93,22 +93,25 @@ export const generateBoxOffice = (movie, leadActor, director, marketMultiplier =
   // Base potential based on hype and quality
   const basePotential = (hypeFactor * 0.6) + (qualityFactor * 0.4);
 
+  const productionBudget = movie.budget || 0;
+  const scaleBudget = Math.max(productionBudget, 1000000);
+
   // Opening Weekend influenced heavily by Hype and Actor Popularity
-  const openingBase = 1000000; // 1M base
-  const starPower = (leadActor.popularity / 100) * 500000;
-  const marketingBoost = (movie.marketingBudget / 2);
+  const openingBase = scaleBudget * 0.12; 
+  const starPower = (leadActor.popularity / 100) * (scaleBudget * 0.18);
+  const marketingBoost = (movie.marketingBudget || 0) * 0.5;
 
   // Market Trends multiplier (defaults to 1 = no active trend for this
   // movie's genre). Applied at the opening weekend so it propagates through
   // worldwide gross, profit, ROI, and verdict.
   const openingWeekend = Math.round(
-    (openingBase + starPower + marketingBoost) * (hypeFactor + 0.5) * (0.8 + Math.random() * 0.4) * marketMultiplier
+    (openingBase + starPower + marketingBoost) * (hypeFactor + 0.4) * (0.7 + Math.random() * 0.6) * marketMultiplier
   );
 
   // Worldwide Gross influenced by Audience Score (legs) and Critic Score (prestige)
   // Legs factor: high audience score means movie stays in theaters longer
-  const legs = (audienceFactor * 4) + (criticFactor * 1);
-  const worldwideGross = Math.round(openingWeekend * (2 + legs) * (0.9 + Math.random() * 0.2));
+  const legs = (audienceFactor * 5) + (criticFactor * 2) + (Math.random() * 2);
+  const worldwideGross = Math.round(openingWeekend * (1.5 + legs) * (0.8 + Math.random() * 0.4));
 
   const domesticGross = Math.round(worldwideGross * 0.45);
   const internationalGross = worldwideGross - domesticGross;
