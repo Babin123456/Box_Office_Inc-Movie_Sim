@@ -53,6 +53,10 @@ const movieSchema = new mongoose.Schema(
 
     // Track weeks in each stage
     weeksInStage: { type: Number, default: 0 },
+
+    // Franchise and Sequel details
+    franchiseId: { type: mongoose.Schema.Types.ObjectId, ref: "Franchise", default: null },
+    sequelNumber: { type: Number, default: 1 },
   },
   { timestamps: true }
 );
