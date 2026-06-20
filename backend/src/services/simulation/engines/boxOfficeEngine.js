@@ -1,3 +1,5 @@
+import { REGIONS } from "../../../constants/regions.js";
+
 const getVerdict = (roi) => {
   if (roi < -0.5) return "DISASTER";
   if (roi < 0) return "FLOP";
@@ -7,7 +9,7 @@ const getVerdict = (roi) => {
   return "LEGENDARY";
 };
 
-export const generateBoxOffice = (movie, leadActor, director, marketMultiplier = 1) => {
+export const generateBoxOffice = (movie, leadActor, director, marketMultiplier = 1, genres = []) => {
   const qualityFactor = movie.quality / 100;
   const criticFactor = movie.criticScore / 100;
   const audienceFactor = movie.audienceScore / 100;
@@ -28,25 +30,56 @@ export const generateBoxOffice = (movie, leadActor, director, marketMultiplier =
     (openingBase + starPower + marketingBoost) * (hypeFactor + 0.5) * (0.8 + Math.random() * 0.4) * marketMultiplier
   );
 
-  // Worldwide Gross influenced by Audience Score (legs) and Critic Score (prestige)
-  // Legs factor: high audience score means movie stays in theaters longer
+  // Calculate Base Worldwide Gross Potential
   const legs = (audienceFactor * 4) + (criticFactor * 1);
-  const worldwideGross = Math.round(openingWeekend * (2 + legs) * (0.9 + Math.random() * 0.2));
+  const potentialWorldwideGross = openingWeekend * (2 + legs) * (0.9 + Math.random() * 0.2);
 
-  const domesticGross = Math.round(worldwideGross * 0.45);
-  const internationalGross = worldwideGross - domesticGross;
+  let worldwideGross = 0;
+  let domesticGross = 0;
+  let internationalGross = 0;
+  const regionalGross = {};
+
+  // Break down into regional grosses
+  for (const [regionKey, regionData] of Object.entries(REGIONS)) {
+    let regionModifier = 1.0;
+    
+    // Apply genre modifiers if any genres match
+    if (genres && genres.length > 0) {
+      let totalGenreMod = 0;
+      let matchedGenres = 0;
+      for (const genre of genres) {
+        if (regionData.genreModifiers[genre]) {
+          totalGenreMod += regionData.genreModifiers[genre];
+          matchedGenres++;
+        }
+      }
+      if (matchedGenres > 0) {
+         // average modifier
+         regionModifier = totalGenreMod / matchedGenres;
+      }
+    }
+
+    const regionGross = Math.round(potentialWorldwideGross * regionData.marketShare * regionModifier);
+    regionalGross[regionKey] = regionGross;
+    worldwideGross += regionGross;
+
+    if (regionKey === "NORTH_AMERICA") {
+        domesticGross += regionGross;
+    } else {
+        internationalGross += regionGross;
+    }
+  }
 
   const totalBudget = (movie.budget || 0) + (movie.marketingBudget || 0);
-  // Instruction: profit = worldwideGross - productionBudget - marketingBudget
-  // Note: Usually studios only get ~50% of box office, but following instructions literally for profit calc
   const profit = worldwideGross - totalBudget;
-  const roi = totalBudget > 0 ? profit / totalBudget : worldwideGross / 1000000; // Fallback if budget 0
+  const roi = totalBudget > 0 ? profit / totalBudget : worldwideGross / 1000000;
 
   return {
     openingWeekend,
     domesticGross,
     internationalGross,
     worldwideGross,
+    regionalGross,
     boxOffice: worldwideGross,
     profit,
     roi,

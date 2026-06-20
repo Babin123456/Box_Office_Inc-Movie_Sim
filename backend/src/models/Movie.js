@@ -27,6 +27,7 @@ const movieSchema = new mongoose.Schema(
     domesticGross: { type: Number, default: 0 },
     internationalGross: { type: Number, default: 0 },
     worldwideGross: { type: Number, default: 0 },
+    regionalGross: { type: Object, default: {} },
     profit: { type: Number, default: 0 },
     roi: { type: Number, default: 0 },
     verdict: { type: String, default: "N/A" },
