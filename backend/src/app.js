@@ -62,6 +62,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import franchiseRoutes from "./routes/franchiseRoutes.js";
 import streamingRoutes from "./routes/streamingRoutes.js";
 import rivalStudioRoutes from "./routes/rivalStudioRoutes.js";
+import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 
 app.use("/api/auth", authRoutes);
 app.use("/api/scripts", scriptRoutes);
@@ -75,6 +76,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/franchises", franchiseRoutes);
 app.use("/api/streaming", streamingRoutes);
 app.use("/api/rival-studios", rivalStudioRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
