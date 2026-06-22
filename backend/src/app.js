@@ -60,6 +60,7 @@ import movieRoutes from "./routes/movieRoutes.js";
 import simulationRoutes from "./routes/simulationRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import franchiseRoutes from "./routes/franchiseRoutes.js";
+import streamingRoutes from "./routes/streamingRoutes.js";
 import rivalStudioRoutes from "./routes/rivalStudioRoutes.js";
 
 app.use("/api/auth", authRoutes);
@@ -72,6 +73,7 @@ app.use("/api/movies", movieRoutes);
 app.use("/api/simulation", simulationRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/franchises", franchiseRoutes);
+app.use("/api/streaming", streamingRoutes);
 app.use("/api/rival-studios", rivalStudioRoutes);
 
 app.use((req, res) => {
