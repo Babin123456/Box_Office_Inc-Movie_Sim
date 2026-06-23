@@ -1,3 +1,5 @@
+import { addNotification } from "../simulation/helpers/notificationHelper.js";
+
 const AWARD_GENRES = ["Action", "Comedy", "Drama", "Horror", "Sci-Fi"];
 const WEEKS_PER_YEAR = 52;
 
@@ -276,9 +278,7 @@ const applyDirectorAward = ({ award, studio, gameState }) => {
     studio.fans = toNumber(studio.fans) + award.fanIncrease;
   }
 
-  gameState.notifications.push({
-    message: `${director.name} won ${award.awardName}.`,
-  });
+  addNotification(gameState, `${director.name} won ${award.awardName}.`);
 };
 
 export const processDirectorAwards = (gameState, studio) => {
