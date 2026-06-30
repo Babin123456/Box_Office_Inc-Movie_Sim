@@ -8,10 +8,12 @@ import { processMarketTrends } from "./trendEngine.js";
 import { generateRivalStudios, processRivalStudios } from "./rivalStudioEngine.js";
 import { processProductionEvents } from "./eventEngine.js";
 import { processRandomEvents } from "./eventEngine.js";
+import { generateNewsFromTrend, generateNewsFromEvent } from "./newsEngine.js";
 import { processStreamingPlatformGrowth } from "./streamingEngine.js";
 
 import { addNotification } from "../helpers/notificationHelper.js";
 import { processWriterAging } from "../helpers/agingHelper.js";
+import TalentHistory from "../../../models/TalentHistory.js";
 
 /**
  * @fileoverview Tick Engine — Weekly Simulation Orchestrator
@@ -62,6 +64,15 @@ export const processWeeklyTick = async (gameState, studio) => {
   const trendMessages = processMarketTrends(gameState);
   trendMessages.forEach((msg) => addNotification(gameState, msg));
 
+  // Generate news items for newly spawned trends
+  if (gameState.marketTrends && gameState.marketTrends.activeTrends) {
+    for (const trend of gameState.marketTrends.activeTrends) {
+      if (trend.startWeek === gameState.currentWeek) {
+        await generateNewsFromTrend(trend, gameState.currentWeek);
+      }
+    }
+  }
+
   processWriterPayroll(gameState, studio);
 
   await processWritingProjects(gameState, studio);
@@ -77,6 +88,26 @@ export const processWeeklyTick = async (gameState, studio) => {
 
   processDirectorAging(gameState);
 
+  const awardYear = Math.floor((Number(gameState.currentWeek || 1) - 1) / 52) + 1;
+  const isAwardWeek = gameState.currentWeek % 52 === 0;
+  const alreadyProcessed = (gameState.directorAwardYearsProcessed || []).includes(awardYear);
+
+  if (isAwardWeek && !alreadyProcessed) {
+    const histories = await TalentHistory.find({ gameStateId: gameState._id }).lean();
+    
+    const attachHistory = (talentList) => {
+      if (!talentList) return;
+      talentList.forEach((director) => {
+        director.careerHistory = histories.filter(h => h.talentId === director.id && h.type === "CAREER").map(h => h.data);
+        director.awardsHistory = histories.filter(h => h.talentId === director.id && h.type === "AWARD").map(h => h.data);
+      });
+    };
+
+    attachHistory(gameState.marketDirectors);
+    attachHistory(gameState.ownedDirectors);
+    attachHistory(gameState.retiredDirectors);
+  }
+
   processDirectorAwards(gameState, studio);
 
   // 9. Production events — movie-level crises & opportunities.
@@ -84,7 +115,12 @@ export const processWeeklyTick = async (gameState, studio) => {
 
   // 10. Random events — global industry events last so they react to the
   //     week's financial activity.
-  processRandomEvents(gameState, studio);
+  const firedEvents = processRandomEvents(gameState, studio);
+  if (firedEvents && firedEvents.length > 0) {
+    for (const ev of firedEvents) {
+      await generateNewsFromEvent(ev.label, ev.message, gameState.currentWeek);
+    }
+  }
 
   await processStreamingPlatformGrowth(gameState);
 
