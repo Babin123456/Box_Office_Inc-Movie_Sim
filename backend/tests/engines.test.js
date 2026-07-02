@@ -100,13 +100,13 @@ test("careerImpactEngine: a HIT raises stats, salary, earnings and history", () 
     title: "The Big One",
   };
   const leadActor = {
+    id: "actor-1",
     popularity: 50,
     salary: 1000,
     fanbase: 0,
     hitMovies: 0,
-    careerHistory: [],
   };
-  const director = { reputation: 50, salary: 1000, careerHistory: [] };
+  const director = { id: "director-1", reputation: 50, salary: 1000 };
 
   processCareerImpact(gameState, movie, null, director, leadActor, null);
 
@@ -116,8 +116,12 @@ test("careerImpactEngine: a HIT raises stats, salary, earnings and history", () 
   assert.strictEqual(leadActor.hitMovies, 1);
   assert.strictEqual(leadActor.fanbase, 5000); // 5 * 1_000_000 * 0.001
   assert.strictEqual(leadActor.careerEarnings, 1000); // 1_000_000 * 0.001
-  assert.strictEqual(leadActor.careerHistory.length, 1);
-  assert.strictEqual(leadActor.careerHistory[0].verdict, VERDICTS.HIT);
+  
+  assert.strictEqual(gameState._pendingTalentHistories.length, 2);
+  assert.strictEqual(gameState._pendingTalentHistories[0].talentId, "director-1");
+  assert.strictEqual(gameState._pendingTalentHistories[0].data.verdict, VERDICTS.HIT);
+  assert.strictEqual(gameState._pendingTalentHistories[1].talentId, "actor-1");
+  assert.strictEqual(gameState._pendingTalentHistories[1].data.verdict, VERDICTS.HIT);
 
   assert.strictEqual(director.reputation, 55);
   assert.strictEqual(director.salary, 1100);

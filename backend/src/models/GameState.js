@@ -667,6 +667,7 @@ const gameStateSchema = new mongoose.Schema(
         busyUntilWeek: Number,
         hiredAt: Date,
         contractYears: Number,
+        careerTier: { type: String, default: "Rookie" },
       },
     ],
 
@@ -693,6 +694,7 @@ const gameStateSchema = new mongoose.Schema(
         busyUntilWeek: Number,
         hiredAt: Date,
         contractYears: Number,
+        careerTier: { type: String, default: "Rookie" },
       },
     ],
 
