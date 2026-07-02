@@ -44,6 +44,11 @@ const AuthInput = ({
       {isPassword && (
         <button
           type="button"
+          aria-label={
+            showPassword
+              ? "Hide password"
+              : "Show password"
+          }
           onClick={() =>
             setShowPassword(
               !showPassword
@@ -59,9 +64,9 @@ const AuthInput = ({
           "
         >
           {showPassword ? (
-            <EyeOff size={20} />
+            <EyeOff size={20} aria-hidden="true" />
           ) : (
-            <Eye size={20} />
+            <Eye size={20} aria-hidden="true" />
           )}
         </button>
       )}
