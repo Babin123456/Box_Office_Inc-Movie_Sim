@@ -21,6 +21,7 @@ import franchiseRoutes from "./routes/franchiseRoutes.js";
 import streamingRoutes from "./routes/streamingRoutes.js";
 import rivalStudioRoutes from "./routes/rivalStudioRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
+import studioRoutes from "./routes/studioRoutes.js";
 
 import errorHandler from "./middleware/errorMiddleware.js";
 
@@ -61,6 +62,7 @@ app.use("/api/franchises", franchiseRoutes);
 app.use("/api/streaming", streamingRoutes);
 app.use("/api/rival-studios", rivalStudioRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/studios", studioRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
