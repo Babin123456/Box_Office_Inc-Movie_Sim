@@ -127,7 +127,6 @@ export const getPastAwards = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch awards" });
   }
 };
-
 export const getMarketIntelligence = async (req, res) => {
   try {
     const gameState = await GameState.findOne({ user: req.user._id });
