@@ -430,3 +430,5 @@ function App() {
 }
 
 export default App;
+/ /   A p p . j s x   w r a p p e d   i n   E r r o r B o u n d a r y  
+ 
