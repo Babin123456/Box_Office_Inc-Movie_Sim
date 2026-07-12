@@ -1,4 +1,4 @@
-## 📄 Description
+## Description
 
 Provide a clear and concise summary of your changes.
 
@@ -6,7 +6,7 @@ Provide a clear and concise summary of your changes.
 
 ---
 
-## 🚀 Open Source Program
+## Open Source Program
 
 - [ ] ECSOC 2026
 - [ ] ELUSOC 2026
@@ -14,7 +14,7 @@ Provide a clear and concise summary of your changes.
 
 ---
 
-## 🛠 Type of Change
+## Type of Change
 
 - [ ] Bug Fix
 - [ ] New Feature
@@ -26,20 +26,21 @@ Provide a clear and concise summary of your changes.
 
 ---
 
-## 📸 Screenshots (If Applicable)
+## Screenshots (If Applicable)
 
 Attach screenshots or screen recordings for UI-related changes.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Describe how you tested your changes.
 
 - [ ] Tested locally
 - [ ] Existing functionality verified
 - [ ] No console errors
-- [ ] Build passes successfully
+- [ ] Backend tests pass (`cd backend && npm test`)
+- [ ] Frontend builds successfully (`cd frontend && npm run build`)
 
 Additional notes:
 
@@ -49,16 +50,16 @@ Describe your testing here...
 
 ---
 
-## 🌿 Target Branch
+## Target Branch
 
 - [ ] `ecsoc`
 - [ ] `elusoc`
 
-> **⚠️ Important:** Pull Requests opened against the `main` branch are automatically closed by repository automation. Please ensure your PR targets either the `ecsoc` or `elusoc` branch.
+> **Important:** Pull Requests opened against the `main` branch are automatically closed by repository automation. Please ensure your PR targets either the `ecsoc` or `elusoc` branch.
 
 ---
 
-## 🏷 Labels
+## Labels
 
 If applicable, request the appropriate labels.
 
@@ -73,7 +74,7 @@ If applicable, request the appropriate labels.
 
 ---
 
-## ✅ Checklist
+## Checklist
 
 - [ ] I have requested assignment before starting work.
 - [ ] My Pull Request targets the correct branch (`ecsoc` or `elusoc`).
@@ -85,3 +86,4 @@ If applicable, request the appropriate labels.
 - [ ] I have updated documentation where necessary.
 - [ ] I have added screenshots for UI changes (if applicable).
 - [ ] If this is an ECSOC contribution, I have requested the `ECSoC26` label before merge.
+- [ ] Frontend builds and lints without errors (`cd frontend && npm run lint && npm run build`).

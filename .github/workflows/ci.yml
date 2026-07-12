@@ -14,9 +14,6 @@ jobs:
       run:
         working-directory: backend
     env:
-      # Throwaway secrets so src/config/env.js does not throw during tests.
-      # The suites also set these via tests/helpers/testEnv.js; these are a
-      # belt-and-suspenders default for the CI runner.
       JWT_ACCESS_SECRET: ci-access-secret-not-for-production
       JWT_REFRESH_SECRET: ci-refresh-secret-not-for-production
       MONGO_URI: mongodb://127.0.0.1:27017/boxoffice-test
@@ -37,7 +34,32 @@ jobs:
         run: npm ci
 
       - name: Run test suite
-        # Node's built-in test runner. DB-backed suites use
-        # mongodb-memory-server, which downloads a mongod binary here (the CI
-        # runner has network access).
         run: npm test
+
+  frontend-checks:
+    name: Frontend lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      VITE_BACKEND_API_URL: http://localhost:5000/api
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build

@@ -1,0 +1,17 @@
+# Each owner line is a file pattern followed by one or more owners
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for the entire repository
+* @Babin123456
+
+# Backend code
+/backend/ @Babin123456
+
+# Frontend code
+/frontend/ @Babin123456
+
+# Documentation
+/docs/ @Babin123456
+
+# CI/CD configuration
+/.github/ @Babin123456
