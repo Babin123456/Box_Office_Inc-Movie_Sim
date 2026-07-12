@@ -11,7 +11,12 @@ export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="flex items-center gap-1 rounded-lg p-1" style={{ backgroundColor: "var(--card2)" }}>
+    <div
+      role="group"
+      aria-label="Theme selection"
+      className="flex items-center gap-1 rounded-lg p-1"
+      style={{ backgroundColor: "var(--card2)" }}
+    >
       {options.map(({ value, icon: Icon, label }) => (
         <button
           key={value}
