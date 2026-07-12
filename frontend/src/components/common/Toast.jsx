@@ -30,10 +30,18 @@ const Toast = () => {
 
   return (
     <div className="fixed bottom-8 right-8 z-[100] animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <div className={`${bgClass} flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white min-w-[300px]`}>
+      <div
+        role="alert"
+        aria-live="assertive"
+        className={`${bgClass} flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white min-w-[300px]`}
+      >
         <Icon size={20} />
         <p className="flex-1 font-bold">{message}</p>
-        <button onClick={() => dispatch(hideToast())} className="hover:opacity-70 transition">
+        <button
+          onClick={() => dispatch(hideToast())}
+          className="hover:opacity-70 transition"
+          aria-label="Close toast"
+        >
           <X size={18} />
         </button>
       </div>
