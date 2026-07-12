@@ -304,3 +304,5 @@ export const fireActor = async (req, res) => {
     });
   }
 };
+e x p o r t   c o n s t   g e t A c t o r   =   ( )   = >   { } ;  
+ 
