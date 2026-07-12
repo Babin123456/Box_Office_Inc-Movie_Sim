@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import NewsItem from "../models/NewsItem.js";
 
 export const getNews = async (req, res) => {
@@ -35,6 +36,10 @@ export const getNews = async (req, res) => {
 
 export const getNewsDetail = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid news article ID format" });
+    }
+
     const newsItem = await NewsItem.findById(req.params.id);
     if (!newsItem) {
       return res.status(404).json({ success: false, message: "News article not found" });
