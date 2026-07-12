@@ -564,3 +564,5 @@ export const addMarketingCampaign = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+e x p o r t   c o n s t   u p d a t e M a r k e t i n g   =   ( )   = >   { } ;  
+ 
