@@ -195,6 +195,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           <button
             onClick={onClose}
             className="md:hidden text-slate-400 hover:text-white p-1 cursor-pointer"
+            aria-label="Close sidebar"
+            aria-expanded={isOpen}
           >
             <X size={24} />
           </button>
