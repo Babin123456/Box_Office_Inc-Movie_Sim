@@ -7,6 +7,21 @@ import Studio from "../models/Studio.js";
 export const updateStudio = async (req, res) => {
   try {
     const { name } = req.body;
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Studio name is required and cannot be empty",
+      });
+    }
+
+    if (name.trim().length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: "Studio name cannot exceed 50 characters",
+      });
+    }
+
     const studio = await Studio.findOne({ owner: req.user._id });
 
     if (!studio) {
