@@ -1,4 +1,5 @@
 import { processWeeklyTick } from "./engines/tickEngine.js";
+import rivalStudioService from "../rivalStudioService.js";
 
 /**
  * @fileoverview Weekly Simulation Entry Point
@@ -29,9 +30,12 @@ import { processWeeklyTick } from "./engines/tickEngine.js";
 export const runWeeklySimulation = async (gameState, studio) => {
   gameState.currentWeek += 1;
 
+  // Run AI Rival Studio updates
+  await rivalStudioService.initializeRivalStudios();
+  await rivalStudioService.simulateRivalTurn();
+
   const result = await processWeeklyTick(gameState, studio);
 
   // processWeeklyTick returns { gameState, rivalReleases }
   return result.rivalReleases || [];
 };
-
