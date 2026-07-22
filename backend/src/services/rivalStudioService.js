@@ -1,4 +1,4 @@
-const RivalStudio = require('../models/RivalStudio');
+import RivalStudio from '../models/RivalStudio.js';
 
 const MOVIE_GENRES = ['Action', 'Comedy', 'Drama', 'Sci-Fi', 'Horror'];
 const RIVAL_NAMES = ['Apex Pictures', 'Vanguard Cinema', 'Horizon Studios', 'Apex Entertainment'];
@@ -6,7 +6,7 @@ const RIVAL_NAMES = ['Apex Pictures', 'Vanguard Cinema', 'Horizon Studios', 'Ape
 /**
  * 1. Initialize AI Rival Studios if they don't exist yet
  */
-async function initializeRivalStudios() {
+export async function initializeRivalStudios() {
   const existingCount = await RivalStudio.countDocuments();
   if (existingCount === 0) {
     const defaultStudios = RIVAL_NAMES.map((name) => ({
@@ -21,7 +21,7 @@ async function initializeRivalStudios() {
 /**
  * 2. Automated Movie Production (Tick / Simulation Step)
  */
-async function simulateRivalTurn() {
+export async function simulateRivalTurn() {
   const rivalStudios = await RivalStudio.find();
 
   for (let studio of rivalStudios) {
@@ -50,7 +50,7 @@ async function simulateRivalTurn() {
 /**
  * 3. Market Competition Logic
  */
-async function calculatePlayerRevenueWithCompetition(playerMovie) {
+export async function calculatePlayerRevenueWithCompetition(playerMovie) {
   const rivals = await RivalStudio.find();
   
   let competingRivalMovies = 0;
@@ -68,7 +68,8 @@ async function calculatePlayerRevenueWithCompetition(playerMovie) {
   return { finalPlayerRevenue, competitionPenalty };
 }
 
-module.exports = {
+// Default export object to support default imports across tests
+export default {
   initializeRivalStudios,
   simulateRivalTurn,
   calculatePlayerRevenueWithCompetition,
