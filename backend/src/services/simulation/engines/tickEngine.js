@@ -19,6 +19,7 @@ import { processLoanRepayments } from "./loanRepaymentEngine.js";
 import { processFanClubTick } from "./fanClubEngine.js";
 import { processUnionSatisfaction } from "./unionEngine.js";
 import { processScandals } from "./prEngine.js";
+import { processScheduledReleases } from "./clashEngine.js";
 
 import { addNotification } from "../helpers/notificationHelper.js";
 import { processWriterAging } from "../helpers/agingHelper.js";
@@ -102,6 +103,9 @@ export const processWeeklyTick = async (gameState, studio) => {
   processDirectingProjects(gameState, studio);
 
   await processProduction(gameState, studio);
+
+  // Auto-release movies whose scheduled release week has arrived (issue #348)
+  await processScheduledReleases(gameState.currentWeek, gameState, studio);
 
   // Process crew union satisfaction and strike states (issue #285)
   processUnionSatisfaction(gameState, studio);

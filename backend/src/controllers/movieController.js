@@ -18,6 +18,7 @@ import { generateNewsFromRelease } from "../services/simulation/engines/newsEngi
 import { withTransaction } from "../utils/financeTransactionHelper.js";
 import Notification from "../models/Notification.js";
 import logger from "../utils/logger.js";
+import { performMovieRelease } from "../services/movie/releaseService.js";
 import { addHistoricRecord } from "../services/simulation/helpers/historicRecordHelper.js";
 import { backfillMovieNames } from "../services/movie/talentBackfillService.js";
 import {
@@ -266,150 +267,49 @@ export const releaseMovie = async (req, res) => {
             const gameState = await findGameState(req.user._id);
             const studio = await Studio.findOne({ owner: req.user._id });
 
-        // Get all related talent/data for engines
-        const script = findScriptById(gameState, movie.scriptId);
-
-        // Find in owned talent
-        const director = gameState.ownedDirectors.find(d => d.id === movie.directorId);
-        const leadActor = gameState.ownedActors.find(a => a.id === movie.leadActorId);
-        const crewTeam = gameState.ownedCrewTeams.find(c => c.id === movie.crewTeamId);
-
-        // Find Writer (might be in history or owned writers)
-        const writer = gameState.ownedWriters.find(w => w.id === script?.writerId);
-
-        // 1. Generate Reviews
-        const reviews = generateReviews(movie, script, director, leadActor, crewTeam);
-        movie.criticScore = reviews.criticScore;
-        movie.criticLabel = reviews.criticLabel;
-        movie.audienceScore = reviews.audienceScore;
-        movie.audienceLabel = reviews.audienceLabel;
-
-        // 2. Generate Box Office
-        // Apply the current market climate: if a trend is active for one of
-        // this movie's genres, its multiplier boosts or dampens the gross.
-        const activeTrends = gameState.marketTrends?.activeTrends || [];
-        const marketMultiplier = getGenreMultiplier(activeTrends, script?.genres);
-        const demographicMultiplier = getDemographicMultiplier(script?.genres, movie.marketingCampaigns);
-        const boxOffice = generateBoxOffice(movie, leadActor, director, marketMultiplier, demographicMultiplier);
-        Object.assign(movie, boxOffice);
-
-        // Franchise reputation (read): load the franchise's accumulated shared
-        // fanbase and prestige, earned from prior installments, and feed them into
-        // studio growth so this release benefits from the franchise's track record.
-        // Read within the session for transactional consistency.
-        let franchiseDoc = null;
-        let franchiseModifiers = {};
-        if (movie.franchiseId) {
-            franchiseDoc = await Franchise.findById(movie.franchiseId).session(session);
-            if (franchiseDoc) {
-                franchiseModifiers = {
-                    fanMultiplier: franchiseDoc.fanbaseMultiplier || 1,
-                    prestigeBonus: franchiseDoc.prestigeBonus || 0,
-                };
-            }
-        }
-
-        // 3. Update Studio Growth (Money handled here, Fans/Prestige inside)
-        const growth = processStudioGrowth(gameState, studio, movie, franchiseModifiers);
-
-        // Franchise reputation (write): fold this installment's outcome into the
-        // franchise's lifetime revenue and accumulated fanbase/prestige. Persisted
-        // with the same session below so it rolls back atomically with the release.
-        if (franchiseDoc) {
-            const progress = computeFranchiseProgress(franchiseDoc, movie);
-            franchiseDoc.fanbaseMultiplier = progress.fanbaseMultiplier;
-            franchiseDoc.prestigeBonus = progress.prestigeBonus;
-            franchiseDoc.totalRevenue = progress.totalRevenue;
-        }
-
-        // 4. Update Careers
-        processCareerImpact(gameState, movie, writer, director, leadActor, crewTeam);
-
-        // 5. Release Talent (Set back to AVAILABLE)
-        if (director) {
-            director.status = "AVAILABLE";
-            director.busyUntilWeek = null;
-        }
-        if (leadActor) {
-            leadActor.status = "AVAILABLE";
-            leadActor.busyUntilWeek = null;
-        }
-        if (crewTeam) {
-            crewTeam.status = "AVAILABLE";
-            crewTeam.busyUntilWeek = null;
-        }
-        // Supporting Actors
-        if (movie.supportingActorIds && movie.supportingActorIds.length > 0) {
-            movie.supportingActorIds.forEach(actorId => {
-                const sActor = gameState.ownedActors.find(a => a.id === actorId);
-                if (sActor) {
-                    sActor.status = "AVAILABLE";
-                    sActor.busyUntilWeek = null;
-                }
-            });
-        }
-
-        // 6. Finalize Movie Status
-        movie.status = "RELEASED";
-        movie.releaseWeek = gameState.currentWeek;
-
-        // Move to history in GameState if needed
-        if (!gameState.movieHistory) gameState.movieHistory = [];
-        gameState.movieHistory.push(movie._id);
-
-        // Remove from active movies
-        gameState.activeMovies = gameState.activeMovies.filter(mId => mId.toString() !== movie._id.toString());
-
-        // Notifications
-        addNotification(gameState, `"${movie.title}" released! Critic Score: ${movie.criticScore} (${movie.criticLabel})`);
-        addNotification(gameState, `"${movie.title}" earned ₹${movie.worldwideGross.toLocaleString()} worldwide. Verdict: ${movie.verdict}`);
-
-        // Generate news article for the release
-        await generateNewsFromRelease(movie, studio, gameState.currentWeek);
-
-        // Surface the market climate's effect when it was material.
-        if (marketMultiplier > 1.01) {
-            const matched = activeTrends.find((t) => (script?.genres || []).includes(t.genre));
-            addNotification(
-                gameState,
-                `Market boost: the "${matched ? matched.label : "current trend"}" lifted "${movie.title}" at the box office.`
-            );
-        } else if (marketMultiplier < 0.99) {
-            const matched = activeTrends.find((t) => (script?.genres || []).includes(t.genre));
-            addNotification(
-                gameState,
-                `Market headwind: "${matched ? matched.label : "current trend"}" dampened "${movie.title}" at the box office.`
-            );
-        }
-
-            await movie.save({ session });
-            await studio.save({ session });
-            await gameState.save({ session });
-            if (franchiseDoc) await franchiseDoc.save({ session });
-
-            return { movie, growth };
+            const releaseResult = await performMovieRelease(movie, studio, gameState, session);
+            return releaseResult;
         });
-
-        // Add to historic records
-        try {
-            await addHistoricRecord({
-                title: result.movie.title,
-                studioId: result.movie.studioId.toString(),
-                studioName: studio.name,
-                worldwideGross: result.movie.worldwideGross,
-                openingWeekend: result.movie.openingWeekend,
-                roi: result.movie.roi,
-                releaseWeek: result.movie.releaseWeek,
-                isRival: false
-            });
-        } catch (recordErr) {
-            logger.error("Failed to save historic record for player", { error: recordErr.message });
-        }
 
         res.status(200).json({ success: true, movie: result.movie, growth: result.growth });
     } catch (error) {
         logger.error("Release Movie Error", { error: error.message, movieId: id });
         res.status(500).json({ success: false, message: `Operation rolled back due to: ${error.message}` });
+    }
+};
+
+export const scheduleRelease = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { releaseWeek } = req.body;
+
+        if (!releaseWeek || typeof releaseWeek !== "number") {
+            return res.status(400).json({ success: false, message: "releaseWeek (number) is required." });
+        }
+
+        const gameState = await GameState.findOne({ user: req.user._id });
+        if (!gameState) return res.status(404).json({ success: false, message: "Game state not found" });
+
+        if (releaseWeek <= gameState.currentWeek) {
+            return res.status(400).json({ success: false, message: "scheduledReleaseWeek must be in the future." });
+        }
+
+        const movie = await Movie.findById(id);
+        if (!movie) return res.status(404).json({ success: false, message: "Movie not found" });
+        if (movie.status !== "READY_FOR_RELEASE" && movie.status !== "POST_PRODUCTION") {
+            return res.status(400).json({ success: false, message: "Only post-production or ready-for-release movies can be scheduled." });
+        }
+
+        movie.scheduledReleaseWeek = releaseWeek;
+        await movie.save();
+
+        res.status(200).json({
+            success: true,
+            message: `"${movie.title}" scheduled for release in week ${releaseWeek}.`,
+            scheduledReleaseWeek: releaseWeek,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
