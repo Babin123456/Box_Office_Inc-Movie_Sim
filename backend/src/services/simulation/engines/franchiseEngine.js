@@ -89,3 +89,43 @@ export const computeFranchiseProgress = (franchise = {}, movie = {}) => {
 
   return { fanbaseMultiplier, prestigeBonus, totalRevenue };
 };
+
+/**
+ * Escapes regex special characters in a string.
+ *
+ * @param {string} string
+ * @returns {string} Escaped string
+ */
+export const escapeRegex = (string) => {
+  if (typeof string !== "string") return "";
+  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+};
+
+/**
+ * Checks if a movie title matches the franchise name (case-insensitive).
+ * Escapes any special regex characters in the franchise name.
+ *
+ * @param {string} movieTitle
+ * @param {string} franchiseName
+ * @returns {boolean} True if matches
+ */
+export const matchFranchiseTitle = (movieTitle, franchiseName) => {
+  if (!movieTitle || !franchiseName) return false;
+  const escaped = escapeRegex(franchiseName);
+  const regex = new RegExp(`^${escaped}`, "i");
+  return regex.test(movieTitle);
+};
+
+/**
+ * Calculates crossover hype multiplier for shared universe releases.
+ * 
+ * @param {number} subFranchiseCount - Number of intersecting sub-franchises.
+ * @param {number} loreConsistency - Lore score (0-100).
+ * @returns {number} Multiplier factor.
+ */
+export const calculateCrossoverHype = (subFranchiseCount, loreConsistency = 100) => {
+  const baseBonus = (subFranchiseCount - 1) * 0.15;
+  const loreFactor = loreConsistency / 100;
+  return Number(Math.max(1.0, 1.0 + baseBonus * loreFactor).toFixed(2));
+};
+

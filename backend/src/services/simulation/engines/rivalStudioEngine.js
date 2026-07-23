@@ -11,6 +11,7 @@
 
 import { addNotification } from "../helpers/notificationHelper.js";
 import { VERDICTS, getVerdict } from "../../../constants/verdicts.js";
+import { addHistoricRecord } from "../helpers/historicRecordHelper.js";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -208,7 +209,7 @@ export const processRivalStudios = (gameState) => {
     if (rival.activeMovies.length < MAX_ACTIVE_MOVIES) {
       const startChance = MOVIE_START_CHANCE[rival.personality] || 0.15;
       if (Math.random() < startChance) {
-        const newMovie = _startRivalMovie(rival);
+        const newMovie = _startRivalMovie(rival, gameState.currentWeek);
         rival.activeMovies.push(newMovie);
       }
     }
@@ -287,6 +288,21 @@ const _releaseRivalMovie = (rival, movie, currentWeek) => {
   rival.movieHistory.push(historyEntry);
   if (rival.movieHistory.length > 20) rival.movieHistory.shift();
 
+  // Add to historic records
+  const rivalOpeningWeekend = Math.round(boxOffice * (0.3 + Math.random() * 0.1));
+  addHistoricRecord({
+    title: movie.title,
+    studioId: rival.id,
+    studioName: rival.name,
+    worldwideGross: boxOffice,
+    openingWeekend: rivalOpeningWeekend,
+    roi,
+    releaseWeek: currentWeek,
+    isRival: true
+  }).catch((recordErr) => {
+    console.error("Failed to save historic record for rival:", recordErr.message);
+  });
+
   return { boxOffice, profit, verdict, title: movie.title, genre: movie.genre };
 };
 
@@ -294,7 +310,7 @@ const _releaseRivalMovie = (rival, movie, currentWeek) => {
 // Internal: start a new rival movie in production
 // ---------------------------------------------------------------------------
 
-const _startRivalMovie = (rival) => {
+const _startRivalMovie = (rival, currentWeek = 1) => {
   const personality = rival.personality || "COMMERCIAL";
   const genres = GENRES_BY_PERSONALITY[personality];
   const genre = pick(genres);
@@ -318,6 +334,7 @@ const _startRivalMovie = (rival) => {
     quality,
     totalWeeks,
     weeksRemaining: totalWeeks,
+    scheduledReleaseWeek: currentWeek + totalWeeks,
   };
 };
 

@@ -53,6 +53,8 @@ const movieSchema = new mongoose.Schema(
 
     createdWeek: { type: Number, required: true },
     releaseWeek: { type: Number, default: null },
+    scheduledReleaseWeek: { type: Number, default: null },
+    clashPenaltyApplied: { type: Boolean, default: false },
     productionProgress: { type: Number, default: 0 },
     remainingWeeks: { type: Number, default: 0 },
 
@@ -85,6 +87,27 @@ const movieSchema = new mongoose.Schema(
       message: String,
       week: Number,
     }],
+    // Soundtracks and Music Licensing (issue #286)
+    soundtrackTier: {
+      type: String,
+      enum: ["PUBLIC_DOMAIN", "INDIE", "PREMIUM"],
+      default: "PUBLIC_DOMAIN",
+    },
+    soundtrackRevenue: { type: Number, default: 0 },
+    
+    // Co-productions and Distribution Partnerships (issue #287)
+    coProducerStudioId: { type: String, default: null },
+    coProducerShare: { type: Number, default: 0 },
+
+    // Re-release and Director's Cut support (issue #283)
+    isReRelease: { type: Boolean, default: false },
+    reReleaseWeek: { type: Number, default: null },
+    directorCutQualityBoost: { type: Number, default: 0 },
+    reReleaseRevenue: { type: Number, default: 0 },
+
+    // Test screenings & script doctoring (issue #288)
+    testScreeningScore: { type: Number, default: null },
+    reshoots: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
