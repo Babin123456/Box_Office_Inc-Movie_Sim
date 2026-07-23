@@ -209,7 +209,7 @@ export const processRivalStudios = (gameState) => {
     if (rival.activeMovies.length < MAX_ACTIVE_MOVIES) {
       const startChance = MOVIE_START_CHANCE[rival.personality] || 0.15;
       if (Math.random() < startChance) {
-        const newMovie = _startRivalMovie(rival);
+        const newMovie = _startRivalMovie(rival, gameState.currentWeek);
         rival.activeMovies.push(newMovie);
       }
     }
@@ -310,7 +310,7 @@ const _releaseRivalMovie = (rival, movie, currentWeek) => {
 // Internal: start a new rival movie in production
 // ---------------------------------------------------------------------------
 
-const _startRivalMovie = (rival) => {
+const _startRivalMovie = (rival, currentWeek = 1) => {
   const personality = rival.personality || "COMMERCIAL";
   const genres = GENRES_BY_PERSONALITY[personality];
   const genre = pick(genres);
@@ -334,6 +334,7 @@ const _startRivalMovie = (rival) => {
     quality,
     totalWeeks,
     weeksRemaining: totalWeeks,
+    scheduledReleaseWeek: currentWeek + totalWeeks,
   };
 };
 
