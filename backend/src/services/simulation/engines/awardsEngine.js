@@ -68,3 +68,20 @@ export const processAnnualAwards = async (gameState, studio) => {
         }
     }
 };
+
+/**
+ * Calculates prestige boost from winning film festival honors.
+ * 
+ * @param {string} awardWon - Award title (PALME_D_OR, GRAND_PRIX, etc).
+ * @returns {number} Prestige points awarded.
+ */
+export const calculateFestivalPrestige = (awardWon) => {
+  switch (awardWon) {
+    case "PALME_D_OR": return 1000;
+    case "GRAND_PRIX": return 600;
+    case "GOLDEN_LION": return 750;
+    case "AUDIENCE_AWARD": return 400;
+    default: return 0;
+  }
+};
+
