@@ -176,3 +176,43 @@ export const processStreamingRevenue = async (gameState, studio) => {
 
   return totalRoyalty;
 };
+
+/**
+ * Calculates projected streaming revenue potential based on movie quality and audience reach.
+ *
+ * @param {object} movie - Movie object { quality, hype, budget }.
+ * @param {number} platformSubscribers - Platform subscriber count.
+ * @returns {{ streamingPotential: number, conversionRate: number }}
+ */
+export const calculateStreamingRevenuePotential = (movie, platformSubscribers = 10000000) => {
+  const qualityFactor = Math.max(0.3, (movie.quality || 50) / 100);
+  const hypeFactor = 1 + ((movie.hype || 50) / 100) * 0.5;
+  const conversionRate = Math.min(0.15, qualityFactor * 0.12 * hypeFactor);
+  const averageMonthlyRevenue = conversionRate * platformSubscribers * 8; // $8 average ARPU
+  const streamingPotential = Math.round(averageMonthlyRevenue * 6); // 6-month exclusivity window
+
+  return { streamingPotential, conversionRate: Number(conversionRate.toFixed(4)) };
+};
+
+/**
+ * Determines optimal hybrid release strategy (theatrical + streaming window timing).
+ *
+ * @param {number} theaterGross - Accumulated theatrical gross.
+ * @param {number} budget - Total production + marketing budget.
+ * @param {number} weekInRelease - Current theatrical release week.
+ * @returns {{ recommendation: string, streamingWindowWeek: number }}
+ */
+export const computeHybridReleaseStrategy = (theaterGross, budget, weekInRelease = 1) => {
+  const roiRatio = theaterGross / (budget || 1);
+
+  if (roiRatio >= 1.5 && weekInRelease >= 4) {
+    return { recommendation: "THEATRICAL_EXTENDED", streamingWindowWeek: weekInRelease + 8 };
+  }
+
+  if (roiRatio >= 0.8 && weekInRelease >= 2) {
+    return { recommendation: "HYBRID_DAY_DATE", streamingWindowWeek: weekInRelease + 4 };
+  }
+
+  return { recommendation: "EARLY_STREAMING_PIVOT", streamingWindowWeek: weekInRelease + 1 };
+};
+

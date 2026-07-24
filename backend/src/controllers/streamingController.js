@@ -2,6 +2,7 @@ import GameState from "../models/GameState.js";
 import Movie from "../models/Movie.js";
 import Studio from "../models/Studio.js";
 import { addNotification } from "../services/simulation/helpers/notificationHelper.js";
+import { calculateStreamingRevenuePotential, computeHybridReleaseStrategy } from "../services/simulation/engines/streamingEngine.js";
 
 // Get all streaming platforms
 export const getPlatforms = async (req, res) => {
@@ -21,6 +22,41 @@ export const getPlatforms = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Get recommended streaming release strategy for a movie
+export const getStreamingStrategy = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    const movie = await Movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ success: false, message: "Movie not found" });
+    }
+
+    const gameState = await GameState.findOne({ user: req.user._id });
+    const platformSubscribers = gameState?.streamingPlatforms?.[0]?.subscribers || 30000000;
+
+    const revenuePotential = calculateStreamingRevenuePotential(movie, platformSubscribers);
+    const hybridStrategy = computeHybridReleaseStrategy(
+      movie.worldwideGross || 0,
+      (movie.budget || 0) + (movie.marketingBudget || 0),
+      movie.releaseWeek ? (gameState?.currentWeek || 1) - movie.releaseWeek : 1
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        movieId: movie._id,
+        title: movie.title,
+        revenuePotential,
+        hybridStrategy,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 // Accept a streaming deal for a movie
 export const acceptStreamingDeal = async (req, res) => {
