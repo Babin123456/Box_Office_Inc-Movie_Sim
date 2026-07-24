@@ -43,10 +43,22 @@ const contractSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PROPOSED", "ACCEPTED", "REJECTED", "EXPIRED", "TERMINATED"],
+      enum: ["PROPOSED", "ACCEPTED", "REJECTED", "EXPIRED", "TERMINATED", "RENEGOTIATED", "BREACHED"],
       default: "PROPOSED",
     },
     buyoutPenalty: {
+      type: Number,
+      default: 0,
+    },
+    breachPenalty: {
+      type: Number,
+      default: 0,
+    },
+    buyoutClause: {
+      type: Boolean,
+      default: true,
+    },
+    renegotiatedCount: {
       type: Number,
       default: 0,
     },
