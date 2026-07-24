@@ -1,6 +1,11 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { calculateFestivalPrestige } from "../src/services/simulation/engines/awardsEngine.js";
+import {
+  calculateFestivalJuryScore,
+  calculatePrestigeHypeBoost,
+  calculateMarketDistributionOffer,
+} from "../src/services/simulation/engines/festivalEngine.js";
 
 describe("Film Festival Engine Unit Tests", () => {
   test("calculateFestivalPrestige awards correct prestige points for awards", () => {
@@ -8,4 +13,21 @@ describe("Film Festival Engine Unit Tests", () => {
     assert.equal(calculateFestivalPrestige("GRAND_PRIX"), 600);
     assert.equal(calculateFestivalPrestige("NONE"), 0);
   });
+
+  test("calculateFestivalJuryScore computes score with festival specific weights", () => {
+    const movie = { quality: 90, criticScore: 80 };
+    const scoreCannes = calculateFestivalJuryScore(movie, "CANNES");
+    assert.equal(scoreCannes, 87);
+  });
+
+  test("calculatePrestigeHypeBoost returns correct multiplier", () => {
+    assert.equal(calculatePrestigeHypeBoost("PALME_D_OR"), 1.35);
+    assert.equal(calculatePrestigeHypeBoost("NONE"), 1.05);
+  });
+
+  test("calculateMarketDistributionOffer calculates acquisition offer for high scores", () => {
+    const offer = calculateMarketDistributionOffer(85, 2000000);
+    assert.ok(offer > 2000000);
+  });
 });
+

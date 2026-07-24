@@ -37,8 +37,21 @@ const festivalSubmissionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["SUBMITTED", "ACCEPTED", "AWARDED", "REJECTED"],
+      enum: ["SUBMITTED", "ACCEPTED", "AWARDED", "REJECTED", "WITHDRAWN"],
       default: "SUBMITTED",
+    },
+    prestigeTier: {
+      type: String,
+      enum: ["TIER_1_MAJORS", "TIER_2_PREMIERE", "TIER_3_REGIONAL"],
+      default: "TIER_1_MAJORS",
+    },
+    marketDistributionOffer: {
+      type: Number,
+      default: 0,
+    },
+    criticHypeBoost: {
+      type: Number,
+      default: 1.0,
     },
   },
   {
