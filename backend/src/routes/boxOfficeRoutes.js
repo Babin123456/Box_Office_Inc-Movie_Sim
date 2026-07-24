@@ -6,13 +6,15 @@
 
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
-import { getBoxOfficeAnalytics, getRegionalSummary } from "../controllers/boxOfficeController.js";
+import { getBoxOfficeAnalytics, getRegionalSummary, getBoxOfficeClashAnalytics } from "../controllers/boxOfficeController.js";
 
 const router = express.Router();
 
 router.use(protect);
 
 router.get("/analytics/:movieId", getBoxOfficeAnalytics);
+router.get("/clash-analytics/:movieId", getBoxOfficeClashAnalytics);
 router.get("/regional-summary", getRegionalSummary);
 
 export default router;
+
