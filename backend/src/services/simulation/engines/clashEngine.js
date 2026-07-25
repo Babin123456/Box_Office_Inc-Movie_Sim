@@ -97,3 +97,38 @@ export const processScheduledReleases = async (currentWeek, gameState, studio) =
     }
   }
 };
+
+/**
+ * Calculates screen cannibalization and theater allocation penalty when head-to-head clashes occur.
+ * 
+ * @param {number} totalAvailableScreens - Total available screens in market.
+ * @param {number} competitorCount - Number of competing movies in the same genre window.
+ * @returns {{ allocatedScreens: number, cannibalizationRate: number }}
+ */
+export const calculateScreenCannibalization = (totalAvailableScreens = 4000, competitorCount = 0) => {
+  if (competitorCount <= 0) {
+    return { allocatedScreens: totalAvailableScreens, cannibalizationRate: 0.0 };
+  }
+
+  const shareFactor = 1 / (competitorCount + 1);
+  const cannibalizationRate = Number((0.15 * competitorCount).toFixed(2));
+  const allocatedScreens = Math.max(100, Math.round(totalAvailableScreens * shareFactor * (1 - cannibalizationRate * 0.2)));
+
+  return { allocatedScreens, cannibalizationRate };
+};
+
+/**
+ * Computes overall clash severity rating.
+ * 
+ * @param {number} sameGenreCompetitors - Competitor count.
+ * @param {number} starPowerDifference - Star power difference score.
+ * @returns {string} Severity rating ("NONE", "MILD", "MODERATE", "SEVERE", "EXTREME")
+ */
+export const computeClashSeverity = (sameGenreCompetitors, starPowerDifference = 0) => {
+  if (sameGenreCompetitors <= 0) return "NONE";
+  if (sameGenreCompetitors === 1 && starPowerDifference >= 20) return "MILD";
+  if (sameGenreCompetitors === 1) return "MODERATE";
+  if (sameGenreCompetitors === 2) return "SEVERE";
+  return "EXTREME";
+};
+

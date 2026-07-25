@@ -67,3 +67,24 @@ export const generateBoxOfficeTelemetry = (movie) => {
     occupancyEfficiency: movie.audienceScore ? Number((movie.audienceScore * 0.85).toFixed(1)) : 60.0,
   };
 };
+
+/**
+  * Computes projected clash revenue loss based on competitor clash count and marketing overlap.
+  * 
+  * @param {number} projectedOpening - Unhindered opening weekend gross projection.
+  * @param {number} clashCount - Number of direct head-to-head genre competitors.
+  * @returns {object} Summary of clash revenue impact.
+  */
+export const computeClashImpactSummary = (projectedOpening = 0, clashCount = 0) => {
+  const lossFactor = Math.min(0.5, clashCount * 0.15);
+  const estimatedRevenueLoss = Math.round(projectedOpening * lossFactor);
+  const adjustedOpening = Math.max(0, projectedOpening - estimatedRevenueLoss);
+
+  return {
+    originalProjection: projectedOpening,
+    adjustedProjection: adjustedOpening,
+    estimatedRevenueLoss,
+    impactPercentage: Math.round(lossFactor * 100),
+  };
+};
+

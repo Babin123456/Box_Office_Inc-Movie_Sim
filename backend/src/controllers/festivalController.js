@@ -1,9 +1,6 @@
-/**
- * @fileoverview Festival & Award Campaign Controller
- */
-
 import FestivalSubmission from "../models/FestivalSubmission.js";
 import Movie from "../models/Movie.js";
+import { calculateFestivalJuryScore, calculatePrestigeHypeBoost, calculateMarketDistributionOffer } from "../services/simulation/engines/festivalEngine.js";
 
 /**
  * POST /api/festivals/submit
@@ -21,8 +18,7 @@ export const submitToFestival = async (req, res, next) => {
     const entryFees = { CANNES: 500000, SUNDANCE: 250000, VENICE: 400000, TIFF: 300000 };
     const fee = entryFees[festivalName] || 250000;
 
-    // Calculate jury reaction score based on quality & criticScore
-    const juryScore = Math.round((movie.quality * 0.6) + (movie.criticScore * 0.4));
+    const juryScore = calculateFestivalJuryScore(movie, festivalName);
     let awardWon = "NONE";
     let status = "ACCEPTED";
 
@@ -33,6 +29,9 @@ export const submitToFestival = async (req, res, next) => {
       status = "REJECTED";
     }
 
+    const criticHypeBoost = calculatePrestigeHypeBoost(awardWon);
+    const marketDistributionOffer = calculateMarketDistributionOffer(juryScore, movie.budget);
+
     const submission = await FestivalSubmission.create({
       userId: req.user._id,
       movieId,
@@ -41,6 +40,8 @@ export const submitToFestival = async (req, res, next) => {
       juryScore,
       awardWon,
       status,
+      criticHypeBoost,
+      marketDistributionOffer,
     });
 
     return res.status(201).json({
@@ -67,3 +68,30 @@ export const getActiveSubmissions = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * POST /api/festivals/withdraw
+ * Withdraws a festival submission prior to jury screening.
+ */
+export const withdrawSubmission = async (req, res, next) => {
+  try {
+    const { submissionId } = req.body;
+    const submission = await FestivalSubmission.findOne({ _id: submissionId, userId: req.user._id });
+
+    if (!submission) {
+      return res.status(404).json({ success: false, message: "Festival submission not found" });
+    }
+
+    submission.status = "WITHDRAWN";
+    await submission.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Submission withdrawn successfully",
+      data: submission,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

@@ -23,6 +23,15 @@ export const buyoutContractAction = createAsyncThunk("contract/buyout", async (c
   }
 });
 
+export const renegotiateContractAction = createAsyncThunk("contract/renegotiate", async ({ contractId, newOffer }, { rejectWithValue }) => {
+  try {
+    const response = await axios.post("/api/contracts/renegotiate", { contractId, newOffer });
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "Failed to renegotiate contract");
+  }
+});
+
 const contractSlice = createSlice({
   name: "contract",
   initialState: {
@@ -46,8 +55,15 @@ const contractSlice = createSlice({
       })
       .addCase(buyoutContractAction.fulfilled, (state, action) => {
         state.contracts = state.contracts.filter(c => c._id !== action.payload.contractId);
+      })
+      .addCase(renegotiateContractAction.fulfilled, (state, action) => {
+        const index = state.contracts.findIndex(c => c._id === action.payload._id);
+        if (index !== -1) {
+          state.contracts[index] = action.payload;
+        }
       });
   },
 });
 
 export default contractSlice.reducer;
+

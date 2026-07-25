@@ -1,6 +1,10 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { calculateRegionalBreakdown, computeScreenDecay } from "../src/utils/boxOfficeAnalytics.js";
+import {
+  calculateRegionalBreakdown,
+  computeScreenDecay,
+  computeClashImpactSummary,
+} from "../src/utils/boxOfficeAnalytics.js";
 import { generateBoxOffice } from "../src/services/simulation/engines/boxOfficeEngine.js";
 
 describe("Box Office Analytics Unit Tests", () => {
@@ -18,6 +22,12 @@ describe("Box Office Analytics Unit Tests", () => {
     const week3 = computeScreenDecay(3, 2000, 80);
     assert.equal(week1, 2000);
     assert.ok(week3 < week1);
+  });
+
+  test("computeClashImpactSummary calculates projected revenue loss", () => {
+    const summary = computeClashImpactSummary(10000000, 2);
+    assert.equal(summary.originalProjection, 10000000);
+    assert.ok(summary.adjustedProjection < 10000000);
   });
 
   test("generateBoxOffice returns regionalSplit in calculation output", () => {

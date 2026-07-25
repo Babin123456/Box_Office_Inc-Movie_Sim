@@ -10,6 +10,7 @@ import axios from "../../api/axios";
 
 const BoxOfficeAnalytics = ({ movieId }) => {
   const [telemetry, setTelemetry] = useState(null);
+  const [clashData, setClashData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,8 +19,12 @@ const BoxOfficeAnalytics = ({ movieId }) => {
     const fetchTelemetry = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/box-office/analytics/${movieId}`);
-        setTelemetry(response.data.data);
+        const [telemetryRes, clashRes] = await Promise.all([
+          axios.get(`/api/box-office/analytics/${movieId}`),
+          axios.get(`/api/box-office/clash-analytics/${movieId}`),
+        ]);
+        setTelemetry(telemetryRes.data.data);
+        setClashData(clashRes.data.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load box office telemetry");
       } finally {
@@ -40,7 +45,7 @@ const BoxOfficeAnalytics = ({ movieId }) => {
       <div className="flex items-center justify-between border-b border-slate-800 pb-4">
         <div>
           <h2 className="text-xl font-bold text-white">{telemetry.title} — Box Office Telemetry</h2>
-          <p className="text-sm text-slate-400">Territory Distribution & Occupancy Breakdown</p>
+          <p className="text-sm text-slate-400">Territory Distribution & Head-to-Head Clash Breakdown</p>
         </div>
         <div className="flex gap-4">
           <div className="text-right">
@@ -69,8 +74,17 @@ const BoxOfficeAnalytics = ({ movieId }) => {
           </div>
         ))}
       </div>
+
+      {clashData && (
+        <div className="bg-slate-800/80 p-4 rounded-lg border border-slate-700">
+          <h3 className="text-md font-semibold text-amber-400 mb-2">Weekend Competition & Screen Clash</h3>
+          <p className="text-sm text-slate-300">Active Direct Competitors: {clashData.competitorCount}</p>
+          <p className="text-sm text-slate-300">Revenue Impact: {clashData.clashImpact?.impactPercentage}% loss estimated</p>
+        </div>
+      )}
     </div>
   );
 };
 
 export default BoxOfficeAnalytics;
+

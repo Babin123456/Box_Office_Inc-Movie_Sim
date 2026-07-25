@@ -6,7 +6,7 @@
  */
 
 import Movie from "../models/Movie.js";
-import { generateBoxOfficeTelemetry, calculateRegionalBreakdown } from "../utils/boxOfficeAnalytics.js";
+import { generateBoxOfficeTelemetry, calculateRegionalBreakdown, computeClashImpactSummary } from "../utils/boxOfficeAnalytics.js";
 
 /**
  * GET /api/box-office/analytics/:movieId
@@ -32,7 +32,39 @@ export const getBoxOfficeAnalytics = async (req, res, next) => {
 };
 
 /**
+ * GET /api/box-office/clash-analytics/:movieId
+ * Calculates head-to-head competition clash analytics and screen allocation impact.
+ */
+export const getBoxOfficeClashAnalytics = async (req, res, next) => {
+  try {
+    const { movieId } = req.params;
+    const movie = await Movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ success: false, message: "Movie not found" });
+    }
+
+    const projectedOpening = Math.round((movie.budget || 5000000) * 0.8);
+    const competitorCount = Math.floor(Math.random() * 3); // Simulated active competitors for telemetry
+    const clashImpact = computeClashImpactSummary(projectedOpening, competitorCount);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        movieId: movie._id,
+        title: movie.title,
+        competitorCount,
+        clashImpact,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * GET /api/box-office/regional-summary
+
  * Retrieves aggregated regional revenue summary across all released studio movies.
  */
 export const getRegionalSummary = async (req, res, next) => {

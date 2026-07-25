@@ -20,3 +20,14 @@ export const validateContractBuyoutSchema = {
     contractId: z.string().min(1, "contractId is required"),
   }),
 };
+
+export const validateContractRenegotiationSchema = {
+  body: z.object({
+    contractId: z.string().min(1, "contractId is required"),
+    newOffer: z.object({
+      baseSalary: z.number().min(0, "baseSalary must be a non-negative number").optional(),
+      backendPoints: z.number().min(0).max(25).optional(),
+    }),
+  }),
+};
+

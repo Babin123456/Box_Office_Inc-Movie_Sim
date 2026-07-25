@@ -4,6 +4,8 @@ import {
   evaluateContractOffer,
   calculateBackendRoyalty,
   calculateBuyoutPenalty,
+  calculateContractBreachPenalty,
+  evaluateContractRenegotiation,
 } from "../src/services/simulation/engines/contractEngine.js";
 
 describe("Contract Engine Unit Tests", () => {
@@ -23,4 +25,17 @@ describe("Contract Engine Unit Tests", () => {
     const penaltyLong = calculateBuyoutPenalty(1000000, 10);
     assert.ok(penaltyLong > penaltyShort);
   });
+
+  test("calculateContractBreachPenalty applies popularity multiplier", () => {
+    const penalty = calculateContractBreachPenalty(1000000, 50);
+    assert.equal(penalty, 2000000);
+  });
+
+  test("evaluateContractRenegotiation approves sufficient salary increase", () => {
+    const current = { offer: { baseSalary: 100000, backendPoints: 5 } };
+    const newOffer = { baseSalary: 150000, backendPoints: 10 };
+    const result = evaluateContractRenegotiation(current, newOffer);
+    assert.equal(result.approved, true);
+  });
 });
+
