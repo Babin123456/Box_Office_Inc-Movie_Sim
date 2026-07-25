@@ -5,10 +5,12 @@ import {
   acceptContract,
   getPendingContracts,
   buyoutContract,
+  renegotiateContract,
 } from "../controllers/contractController.js";
 import {
   validateContractNegotiationSchema,
   validateContractBuyoutSchema,
+  validateContractRenegotiationSchema,
 } from "../validators/contractValidators.js";
 import { validate } from "../middleware/validationMiddleware.js";
 
@@ -18,5 +20,7 @@ router.get("/", protect, getPendingContracts);
 router.post("/negotiate", protect, validate(validateContractNegotiationSchema), negotiateContract);
 router.post("/accept", protect, acceptContract);
 router.post("/buyout", protect, validate(validateContractBuyoutSchema), buyoutContract);
+router.post("/renegotiate", protect, validate(validateContractRenegotiationSchema), renegotiateContract);
 
 export default router;
+

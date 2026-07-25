@@ -68,3 +68,35 @@ export const calculateBuyoutPenalty = (upfrontFee, remainingWeeks) => {
   const remainingFactor = Math.max(1, remainingWeeks) * 0.1;
   return Math.round(baseFee * (1 + remainingFactor));
 };
+
+/**
+ * Calculates financial penalty when a talent breaches exclusivity contract.
+ * 
+ * @param {number} upfrontFee - Base contract fee.
+ * @param {number} popularityScore - Talent popularity score.
+ * @returns {number} Breach penalty amount.
+ */
+export const calculateContractBreachPenalty = (upfrontFee, popularityScore) => {
+  const multiplier = 1.5 + (popularityScore / 100);
+  return Math.round((upfrontFee || 100000) * multiplier);
+};
+
+/**
+ * Evaluates contract renegotiation request.
+ * 
+ * @param {object} currentContract - Existing contract details.
+ * @param {object} newProposal - New requested base salary & backend royalty.
+ * @returns {object} Renegotiation evaluation outcome.
+ */
+export const evaluateContractRenegotiation = (currentContract, newProposal) => {
+  const salaryIncreaseRatio = (newProposal.baseSalary - currentContract.offer.baseSalary) / (currentContract.offer.baseSalary || 1);
+  const royaltyIncrease = (newProposal.backendPoints || 0) - (currentContract.offer.backendPoints || 0);
+
+  const totalImprovement = (salaryIncreaseRatio * 0.6) + (royaltyIncrease * 0.05);
+
+  if (totalImprovement >= 0.15) {
+    return { approved: true, bonusMultiplier: 1.1 };
+  }
+  return { approved: false, reason: "Proposed terms are insufficient to justify contract revision" };
+};
+

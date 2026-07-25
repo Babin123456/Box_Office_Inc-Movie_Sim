@@ -289,6 +289,53 @@ export const buyoutContract = async (req, res) => {
   }
 };
 
+/**
+ * Renegotiate active contract parameters.
+ * POST /api/contracts/renegotiate
+ */
+export const renegotiateContract = async (req, res) => {
+  try {
+    const { contractId, newOffer } = req.body;
+    const gameState = await findGameState(req.user._id);
+
+    if (!gameState) {
+      return res.status(404).json({ success: false, message: "Game state not found" });
+    }
+
+    const contract = (gameState.pendingContracts || []).find(
+      (c) => c._id.toString() === contractId || c.contractId === contractId
+    );
+
+    if (!contract) {
+      return res.status(404).json({ success: false, message: "Contract not found" });
+    }
+
+    if (contract.status !== "ACCEPTED") {
+      return res.status(400).json({ success: false, message: "Only active accepted contracts can be renegotiated" });
+    }
+
+    const updatedBaseSalary = Number(newOffer.baseSalary || contract.offer.baseSalary);
+    const updatedBackendPoints = Math.min(25, Number(newOffer.backendPoints || contract.offer.backendPoints));
+
+    contract.offer.baseSalary = updatedBaseSalary;
+    contract.offer.backendPoints = updatedBackendPoints;
+    contract.status = "RENEGOTIATED";
+    contract.renegotiatedCount = (contract.renegotiatedCount || 0) + 1;
+
+    await gameState.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Contract successfully renegotiated",
+      data: contract,
+    });
+  } catch (error) {
+    console.error("Error renegotiating contract:", error);
+    res.status(500).json({ success: false, message: "Failed to renegotiate contract" });
+  }
+};
+
+
 // --- Helpers ---
 
 function calculateAcceptChance(offer, round) {
