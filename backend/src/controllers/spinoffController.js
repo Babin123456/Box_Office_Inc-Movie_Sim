@@ -2,6 +2,8 @@ import Franchise from "../models/Franchise.js";
 import Studio from "../models/Studio.js";
 import GameState from "../models/GameState.js";
 import Notification from "../models/Notification.js";
+import { calculateUniverseFatigue, evaluateLoreConsistency } from "../services/simulation/engines/franchiseEngine.js";
+
 
 /**
  * Create a spin-off franchise from an existing franchise.
@@ -177,6 +179,7 @@ export const createCrossover = async (req, res) => {
 
 /**
  * Get universe synergy metrics for a franchise ecosystem.
+
  * GET /api/franchises/universe-synergy/:franchiseId
  */
 export const getUniverseSynergy = async (req, res) => {
@@ -188,12 +191,18 @@ export const getUniverseSynergy = async (req, res) => {
       return res.status(404).json({ success: false, message: "Franchise not found" });
     }
 
+    const fatigue = calculateUniverseFatigue(franchise.releasesPerYear || 1);
+    const loreScore = evaluateLoreConsistency(franchise.loreConsistency || 90, true);
+
     const synergy = {
       franchiseId: franchise._id,
       name: franchise.name,
       fanbaseMultiplier: franchise.fanbaseMultiplier || 1.0,
       prestigeBonus: franchise.prestigeBonus || 0,
       crossoverBonusMultiplier: franchise.isCrossover ? 1.5 : 1.0,
+      fatigueScore: fatigue.fatigueScore,
+      decayMultiplier: fatigue.decayMultiplier,
+      loreConsistencyScore: loreScore,
     };
 
     return res.status(200).json({
@@ -205,3 +214,4 @@ export const getUniverseSynergy = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch universe synergy" });
   }
 };
+

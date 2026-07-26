@@ -45,6 +45,17 @@ const franchiseEcosystemSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    crossMediaMultiplier: {
+      type: Number,
+      default: 1.1,
+      min: 1.0,
+      max: 2.0,
+    },
+    franchiseTier: {
+      type: String,
+      enum: ["STANDALONE", "TRILOGY", "CINEMATIC_UNIVERSE", "MULTI_MEDIA_EMPIRE"],
+      default: "CINEMATIC_UNIVERSE",
+    },
   },
   {
     timestamps: true,

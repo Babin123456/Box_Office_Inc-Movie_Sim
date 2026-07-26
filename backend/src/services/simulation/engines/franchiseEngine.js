@@ -129,3 +129,34 @@ export const calculateCrossoverHype = (subFranchiseCount, loreConsistency = 100)
   return Number(Math.max(1.0, 1.0 + baseBonus * loreFactor).toFixed(2));
 };
 
+/**
+ * Calculates audience franchise fatigue level based on consecutive releases per year.
+ * 
+ * @param {number} releasesPerYear - Number of franchise movies released within 12 months.
+ * @returns {{ fatigueScore: number, decayMultiplier: number }}
+ */
+export const calculateUniverseFatigue = (releasesPerYear = 1) => {
+  if (releasesPerYear <= 2) {
+    return { fatigueScore: 0, decayMultiplier: 1.0 };
+  }
+  const excess = releasesPerYear - 2;
+  const fatigueScore = Math.min(100, excess * 25);
+  const decayMultiplier = Number((1.0 - fatigueScore * 0.004).toFixed(2));
+  return { fatigueScore, decayMultiplier };
+};
+
+/**
+ * Evaluates universe lore consistency score after adding a new spin-off.
+ * 
+ * @param {number} currentLore - Existing lore consistency (0-100).
+ * @param {boolean} retainsLeadWriter - Whether original screenwriter is involved.
+ * @returns {number} Updated lore score.
+ */
+export const evaluateLoreConsistency = (currentLore = 100, retainsLeadWriter = true) => {
+  if (retainsLeadWriter) {
+    return Math.min(100, currentLore + 5);
+  }
+  return Math.max(20, currentLore - 15);
+};
+
+

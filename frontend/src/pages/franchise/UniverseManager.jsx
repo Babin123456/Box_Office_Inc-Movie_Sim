@@ -30,10 +30,12 @@ const UniverseManager = ({ franchiseId }) => {
   if (loading) return <div className="p-4 text-center text-slate-400">Loading universe data...</div>;
   if (!synergy) return null;
 
+  const fatigueColor = synergy.fatigueScore >= 75 ? "text-rose-400" : synergy.fatigueScore >= 40 ? "text-amber-400" : "text-emerald-400";
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl space-y-4">
       <h3 className="text-lg font-bold text-white">Cinematic Universe: {synergy.name}</h3>
-      <div className="grid grid-cols-3 gap-4 text-center">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
         <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
           <span className="text-xs text-slate-400 block">Fanbase Multiplier</span>
           <span className="text-lg font-bold text-indigo-400">{synergy.fanbaseMultiplier}x</span>
@@ -46,9 +48,22 @@ const UniverseManager = ({ franchiseId }) => {
           <span className="text-xs text-slate-400 block">Crossover Multiplier</span>
           <span className="text-lg font-bold text-emerald-400">{synergy.crossoverBonusMultiplier}x</span>
         </div>
+        <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+          <span className="text-xs text-slate-400 block">Audience Fatigue</span>
+          <span className={`text-lg font-bold ${fatigueColor}`}>{synergy.fatigueScore ?? 0}%</span>
+        </div>
+        <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+          <span className="text-xs text-slate-400 block">Revenue Decay</span>
+          <span className="text-lg font-bold text-slate-300">{synergy.decayMultiplier ?? 1.0}x</span>
+        </div>
+        <div className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+          <span className="text-xs text-slate-400 block">Lore Consistency</span>
+          <span className="text-lg font-bold text-purple-400">{synergy.loreConsistencyScore ?? 100}/100</span>
+        </div>
       </div>
     </div>
   );
 };
 
 export default UniverseManager;
+
