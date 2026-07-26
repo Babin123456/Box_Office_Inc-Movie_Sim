@@ -5,11 +5,14 @@ import { acceptStreamingDealSchema } from "../validators/streamingValidators.js"
 import {
   getPlatforms,
   acceptStreamingDeal,
+  getStreamingStrategy,
 } from "../controllers/streamingController.js";
 
 const router = express.Router();
 
 router.get("/platforms", protect, getPlatforms);
+router.get("/movies/:movieId/strategy", protect, getStreamingStrategy);
 router.post("/movies/:movieId/accept-deal", protect, validate(acceptStreamingDealSchema), acceptStreamingDeal);
 
 export default router;
+
