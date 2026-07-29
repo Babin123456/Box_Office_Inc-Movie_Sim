@@ -46,8 +46,8 @@ const movieSchema = new mongoose.Schema(
     releaseType: { type: String, enum: ['THEATRICAL', 'STREAMING'], default: 'THEATRICAL' },
     streamingDeal: {
       platformId: String,
-      dealValue: Number,
-      exclusiveWeeks: Number,
+      dealValue: { type: Number, min: 0 },
+      exclusiveWeeks: { type: Number, min: 0 },
       status: { type: String, enum: ['OFFERED', 'ACCEPTED', 'REJECTED'] }
     },
 
