@@ -82,11 +82,19 @@ export const createMovie = async (req, res) => {
 
     const playerMarketingBudget = (marketingBudget || 0) * (1 - share / 100);
 
-    // Validate Studio Money for Marketing Budget (player's share)
-    if (studio.money < playerMarketingBudget) {
-        return res.status(400).json({ success: false, message: "Insufficient funds for marketing" });
+    // Atomically deduct marketing budget (player's share) to prevent race conditions
+    // from concurrent requests overwriting each other's balance updates.
+    const updatedStudio = await Studio.findOneAndUpdate(
+      { _id: studio._id, money: { $gte: playerMarketingBudget } },
+      { $inc: { money: -playerMarketingBudget } },
+      { returnDocument: "after" }
+    );
+    if (!updatedStudio) {
+      return res.status(400).json({ success: false, message: "Insufficient funds for marketing" });
     }
-    // Validate Studio Money for Marketing Budget
+    studio.money = updatedStudio.money;
+
+    // Validate Studio Money for Marketing Budget (in-memory guard for downstream logic)
     validateMarketingBudget(studio, marketingBudget, marketingCampaignIds);
 
     // Soundtrack selection
@@ -210,9 +218,6 @@ export const createMovie = async (req, res) => {
     crewTeam.status = "BUSY";
     crewTeam.busyUntilWeek = gameState.currentWeek + 20;
 
-    // Deduct marketing budget (player's share)
-    studio.money -= playerMarketingBudget;
-
     gameState.activeMovies.push(movie._id);
 
     await Notification.create({
@@ -221,7 +226,6 @@ export const createMovie = async (req, res) => {
         createdAt: new Date()
     });
 
-    await studio.save();
     await gameState.save();
 
     res.status(201).json({ success: true, movie });
