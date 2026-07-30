@@ -38,7 +38,7 @@ const marketCrewTeamSchema = new mongoose.Schema(
 
     morale: { type: Number },
 
-    salary: { type: Number },
+    salary: { type: Number, min: 0 },
 
     rarity: { type: String },
 

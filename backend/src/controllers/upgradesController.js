@@ -36,10 +36,6 @@ export const buyUpgrade = async (req, res) => {
       return res.status(404).json({ success: false, message: "Studio not found" });
     }
 
-    if (studio.money < upgrade.cost) {
-      return res.status(400).json({ success: false, message: "Insufficient funds for this studio upgrade" });
-    }
-
     const alreadyPurchased = await StudioUpgrade.findOne({ studioId: studio._id, upgradeId });
     if (alreadyPurchased) {
       return res.status(400).json({ success: false, message: "This upgrade is already active for your studio" });
@@ -48,8 +44,16 @@ export const buyUpgrade = async (req, res) => {
     const gameState = await GameState.findOne({ user: req.user._id });
     const currentWeek = gameState?.currentWeek || 1;
 
-    studio.money -= upgrade.cost;
-    studio.prestige += 25; // Permanent prestige increase for studio development
+    // Atomically deduct cost and award prestige to prevent race conditions
+    // from concurrent requests overwriting each other's balance updates.
+    const updatedStudio = await Studio.findOneAndUpdate(
+      { _id: studio._id, money: { $gte: upgrade.cost } },
+      { $inc: { money: -upgrade.cost, prestige: 25 } },
+      { returnDocument: "after" }
+    );
+    if (!updatedStudio) {
+      return res.status(400).json({ success: false, message: "Insufficient funds for this studio upgrade" });
+    }
 
     const purchasedUpgrade = await StudioUpgrade.create({
       studioId: studio._id,
@@ -57,13 +61,11 @@ export const buyUpgrade = async (req, res) => {
       purchasedWeek: currentWeek
     });
 
-    await studio.save();
-
     res.status(200).json({
       success: true,
       message: `Successfully purchased "${upgrade.name}"! Prestige increased by +25.`,
       purchasedUpgrade,
-      studioMoney: studio.money
+      studioMoney: updatedStudio.money
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
