@@ -751,9 +751,9 @@ const gameStateSchema = new mongoose.Schema(
       talentType: { type: String, enum: ["ACTOR", "DIRECTOR", "WRITER"], required: true },
       talentName: { type: String, default: "" },
       offer: {
-        baseSalary: { type: Number, default: 0 },
-        backendPoints: { type: Number, default: 0 }, // percentage of profit
-        movieCount: { type: Number, default: 1 },    // multi-picture deal
+        baseSalary: { type: Number, default: 0, min: 0 },
+        backendPoints: { type: Number, default: 0, min: 0, max: 25 }, // percentage of profit
+        movieCount: { type: Number, default: 1, min: 1, max: 10 },    // multi-picture deal
       },
       patience: { type: Number, default: 3 },  // rounds before talent walks away
       round: { type: Number, default: 0 },
