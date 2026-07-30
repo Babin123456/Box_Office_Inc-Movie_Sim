@@ -112,6 +112,9 @@ const movieSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Compound index: simulation queries filter by studioId + status (issue #398)
+movieSchema.index({ studioId: 1, status: 1 });
+
 movieSchema.virtual("totalGross").get(function () {
   return this.boxOffice;
 });
