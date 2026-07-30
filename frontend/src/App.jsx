@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import ErrorBoundary from "./components/ErrorBoundary";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 
@@ -55,7 +56,8 @@ import StudioUpgrades from "./pages/studio/StudioUpgrades";
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <ErrorBoundary>
+        <Routes>
         <Route path="/register" element={<Register />} />
 
         <Route path="/login" element={<Login />} />
@@ -434,7 +436,9 @@ function App() {
         />
       </Routes>
       <Toast />
-    </BrowserRouter>
+    </ErrorBoundary>
+  </BrowserRouter>
+
   );
 }
 
