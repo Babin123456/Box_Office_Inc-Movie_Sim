@@ -42,6 +42,8 @@ import contractRoutes from "./routes/contractRoutes.js";
 import testScreeningRoutes from "./routes/testScreeningRoutes.js";
 import recordsRoutes from "./routes/recordsRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
+import crisisRoutes from "./routes/crisisRoutes.js";
+
 
 const app = express();
 
@@ -134,6 +136,8 @@ app.use("/api/contracts", apiRateLimiter, contractRoutes);
 app.use("/api/movies", apiRateLimiter, testScreeningRoutes);
 app.use("/api/records", apiRateLimiter, recordsRoutes);
 app.use("/api/insurance", apiRateLimiter, insuranceRoutes);
+app.use("/api/crisis", apiRateLimiter, crisisRoutes);
+
 
 app.use((req, res) => {
   res.status(404).json({

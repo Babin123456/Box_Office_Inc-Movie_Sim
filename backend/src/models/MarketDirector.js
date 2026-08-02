@@ -38,7 +38,7 @@ const marketDirectorSchema = new mongoose.Schema(
 
     morale: { type: Number },
 
-    salary: { type: Number },
+    salary: { type: Number, min: 0 },
 
     marketValue: { type: Number, default: 0 },
 
