@@ -38,6 +38,8 @@ import fanClubRoutes from "./routes/fanClubRoutes.js";
 import unionRoutes from "./routes/unionRoutes.js";
 import spinoffRoutes from "./routes/spinoffRoutes.js";
 import prRoutes from "./routes/prRoutes.js";
+import bondMarketRoutes from "./routes/bondMarketRoutes.js";
+import cinematicUniverseRoutes from "./routes/cinematicUniverseRoutes.js";
 import contractRoutes from "./routes/contractRoutes.js";
 import testScreeningRoutes from "./routes/testScreeningRoutes.js";
 import recordsRoutes from "./routes/recordsRoutes.js";
@@ -137,6 +139,7 @@ app.use("/api/movies", apiRateLimiter, testScreeningRoutes);
 app.use("/api/records", apiRateLimiter, recordsRoutes);
 app.use("/api/insurance", apiRateLimiter, insuranceRoutes);
 app.use("/api/crisis", apiRateLimiter, crisisRoutes);
+app.use("/api/cinematic-universes", apiRateLimiter, cinematicUniverseRoutes);
 
 
 app.use((req, res) => {
