@@ -14,6 +14,9 @@ import marketingRoutes from "./routes/marketingRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import scriptRoutes from "./routes/scriptRoutes.js";
 import writersRoutes from "./routes/writersRoutes.js";
+import awardsRoutes from "./routes/awardsRoutes.js";
+import streamingAuctionRoutes from "./routes/streamingAuctionRoutes.js";
+import bondMarketRoutes from "./routes/bondMarketRoutes.js";
 import upgradesRoutes from "./routes/upgradesRoutes.js";
 import directorRoutes from "./routes/directorRoutes.js";
 import actorsRoutes from "./routes/actorsRoutes.js";
@@ -136,6 +139,7 @@ app.use("/api/contracts", apiRateLimiter, contractRoutes);
 app.use("/api/movies", apiRateLimiter, testScreeningRoutes);
 app.use("/api/records", apiRateLimiter, recordsRoutes);
 app.use("/api/insurance", apiRateLimiter, insuranceRoutes);
+app.use("/api/bond-market", apiRateLimiter, bondMarketRoutes);
 app.use("/api/crisis", apiRateLimiter, crisisRoutes);
 
 
