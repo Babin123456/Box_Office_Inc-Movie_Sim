@@ -136,6 +136,9 @@ app.use("/api/contracts", apiRateLimiter, contractRoutes);
 app.use("/api/movies", apiRateLimiter, testScreeningRoutes);
 app.use("/api/records", apiRateLimiter, recordsRoutes);
 app.use("/api/insurance", apiRateLimiter, insuranceRoutes);
+import merchandiseRoutes from "./routes/merchandiseRoutes.js";
+
+app.use("/api/merchandise", apiRateLimiter, merchandiseRoutes);
 app.use("/api/crisis", apiRateLimiter, crisisRoutes);
 
 
