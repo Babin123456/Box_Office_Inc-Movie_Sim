@@ -102,3 +102,22 @@ test("e2e: gameplay endpoints reject unauthenticated access with 401", async () 
   const res = await fetch(`${baseUrl}/api/actors/`);
   assert.strictEqual(res.status, 401);
 });
+test("e2e: gameplay endpoints reject malformed JWT tokens with 401", async () => {
+  const malformedToken = "malformed.jwt.token";
+
+  const marketRes = await authGet("/api/actors/", malformedToken);
+  assert.strictEqual(marketRes.status, 401);
+
+  const hireRes = await authPost("/api/actors/hire/0", malformedToken);
+  assert.strictEqual(hireRes.status, 401);
+});
+
+test("e2e: gameplay endpoints reject invalid bearer tokens with 401", async () => {
+  const invalidToken = "this-is-not-a-valid-jwt";
+
+  const marketRes = await authGet("/api/actors/", invalidToken);
+  assert.strictEqual(marketRes.status, 401);
+
+  const hireRes = await authPost("/api/actors/hire/0", invalidToken);
+  assert.strictEqual(hireRes.status, 401);
+});
