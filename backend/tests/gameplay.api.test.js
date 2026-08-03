@@ -25,12 +25,14 @@ let baseUrl;
 
 before(async () => {
   mongod = await MongoMemoryReplSet.create({
-    replSet: { count: 1 }
+    replSet: { count: 1 },
   });
-  let uri = mongod.getUri();
+
+  const uri = mongod.getUri();
   await mongoose.connect(uri);
 
   const { default: app } = await import("../src/app.js");
+
   await new Promise((resolve) => {
     server = app.listen(0, () => {
       baseUrl = `http://127.0.0.1:${server.address().port}`;
@@ -60,22 +62,52 @@ const registerStudio = async (id = Math.random().toString(36).substring(7)) => {
       studioName: `P1 Studios_${id}`,
     }),
   });
+
   return res.json(); // { success, token, user, studio }
 };
 
 const authGet = (path, token) =>
-  fetch(`${baseUrl}${path}`, { headers: { Authorization: `Bearer ${token}` } });
+  fetch(`${baseUrl}${path}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
 const authPost = (path, token) =>
   fetch(`${baseUrl}${path}`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
 test("e2e: register seeds a studio with 10,000,000 starting funds", async () => {
   const { token, studio } = await registerStudio();
+
   assert.ok(token, "registration returns an access token");
   assert.strictEqual(studio.money, 10000000);
+});
+
+test("e2e: newly registered studio starts with an empty owned actor roster", async () => {
+  const { token } = await registerStudio();
+
+  const ownedRes = await authGet("/api/actors/owned", token);
+  assert.strictEqual(ownedRes.status, 200);
+
+  const owned = await ownedRes.json();
+
+  assert.strictEqual(owned.success, true);
+
+  assert.ok(
+    Array.isArray(owned.ownedActors),
+    "ownedActors should be returned as an array",
+  );
+
+  assert.strictEqual(
+    owned.ownedActors.length,
+    0,
+    "a newly registered studio should not own any actors",
+  );
 });
 
 test("e2e: register -> browse actor market -> hire moves an actor to the owned roster", async () => {
@@ -83,15 +115,23 @@ test("e2e: register -> browse actor market -> hire moves an actor to the owned r
 
   const marketRes = await authGet("/api/actors/", token);
   assert.strictEqual(marketRes.status, 200);
+
   const market = await marketRes.json();
+
   assert.strictEqual(market.success, true);
-  assert.ok(Array.isArray(market.actors) && market.actors.length > 0, "market returns actors");
+  assert.ok(
+    Array.isArray(market.actors) && market.actors.length > 0,
+    "market returns actors",
+  );
 
   const hireRes = await authPost("/api/actors/hire/0", token);
   assert.strictEqual(hireRes.status, 200);
+
   const hire = await hireRes.json();
+
   assert.strictEqual(hire.success, true);
   assert.ok(hire.actor, "the hired actor is returned");
+
   assert.ok(
     Array.isArray(hire.ownedActors) && hire.ownedActors.length >= 1,
     "the actor is now in the owned roster",
