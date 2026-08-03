@@ -3,6 +3,11 @@ import "./helpers/testEnv.js";
 import test, { before, after } from "node:test";
 import assert from "node:assert";
 import mongoose from "mongoose";
+import {
+  registerStudio,
+  authGet,
+  authPost,
+} from "./helpers/gameplayHelpers.js";
 import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 // ---------------------------------------------------------------------------
@@ -73,13 +78,13 @@ const authPost = (path, token) =>
   });
 
 test("e2e: register seeds a studio with 10,000,000 starting funds", async () => {
-  const { token, studio } = await registerStudio();
+  const { token, studio } = await registerStudio(baseUrl);
   assert.ok(token, "registration returns an access token");
   assert.strictEqual(studio.money, 10000000);
 });
 
 test("e2e: register -> browse actor market -> hire moves an actor to the owned roster", async () => {
-  const { token } = await registerStudio();
+  const { token } = await registerStudio(baseUrl);
 
   const marketRes = await authGet("/api/actors/", token);
   assert.strictEqual(marketRes.status, 200);
