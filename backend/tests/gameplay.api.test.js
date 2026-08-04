@@ -88,6 +88,28 @@ test("e2e: register seeds a studio with 10,000,000 starting funds", async () => 
   assert.strictEqual(studio.money, 10000000);
 });
 
+test("e2e: newly registered studio starts with an empty owned actor roster", async () => {
+  const { token } = await registerStudio();
+
+  const ownedRes = await authGet("/api/actors/owned", token);
+  assert.strictEqual(ownedRes.status, 200);
+
+  const owned = await ownedRes.json();
+
+  assert.strictEqual(owned.success, true);
+
+  assert.ok(
+    Array.isArray(owned.ownedActors),
+    "ownedActors should be returned as an array",
+  );
+
+  assert.strictEqual(
+    owned.ownedActors.length,
+    0,
+    "a newly registered studio should not own any actors",
+  );
+});
+
 test("e2e: register -> browse actor market -> hire moves an actor to the owned roster", async () => {
   const { token } = await registerStudio();
 
@@ -110,6 +132,7 @@ test("e2e: register -> browse actor market -> hire moves an actor to the owned r
 
   assert.strictEqual(hire.success, true);
   assert.ok(hire.actor, "the hired actor is returned");
+
   assert.ok(
     Array.isArray(hire.ownedActors) && hire.ownedActors.length >= 1,
     "the actor is now in the owned roster",
