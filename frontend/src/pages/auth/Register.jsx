@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import api, { persistAuthSession } from "../../api/axios";
@@ -12,7 +13,10 @@ import { GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { loading, error, execute } = useAsyncAction();
+  const { loading, error, execute, setError } = useAsyncAction();
+  const [googleLoginMutation] = useGoogleLoginMutation();
+  const [requiresStudio, setRequiresStudio] = useState(false);
+  const [pendingToken, setPendingToken] = useState(null);
 
   const { values, errors, touched, setValue, validate } = useFormValidation(
     { username: "", email: "", password: "", studioName: "" },
@@ -59,15 +63,15 @@ const Register = () => {
       const res = await googleLoginMutation({ token }).unwrap();
 
       if (res.requiresStudio) {
-        setPendingToken(token); 
-        setRequiresStudio(true); 
+        setPendingToken(token);
+        setRequiresStudio(true);
       } else {
         persistAuthSession({
           user: res.user,
           token: res.token,
           accessTokenExpiresAt: res.accessTokenExpiresAt,
         });
-        navigate('/'); 
+        navigate('/');
       }
     } catch (error) {
       console.error("Google Auth Error:", error);
@@ -84,7 +88,7 @@ const Register = () => {
         token: res.token,
         accessTokenExpiresAt: res.accessTokenExpiresAt,
       });
-      navigate('/'); 
+      navigate('/');
     } catch (error) {
       console.error("Failed to create studio:", error);
       setError("Failed to finish Google account creation.");
@@ -104,8 +108,8 @@ const Register = () => {
           ) : (
             <form onSubmit={handleGoogleStudioSubmit} className="w-full flex flex-col gap-3 p-4 bg-slate-800 rounded-lg border border-violet-500">
               <h3 className="text-white text-sm text-center">Almost there! What should we call your studio?</h3>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="e.g. DreamWorks"
                 value={googleStudioName}
                 onChange={(e) => setGoogleStudioName(e.target.value)}
@@ -113,8 +117,8 @@ const Register = () => {
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-slate-900 text-white rounded-lg border border-slate-700 focus:border-violet-500"
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isLoading || !googleStudioName}
                 className="w-full bg-violet-600 hover:bg-violet-700 py-2 rounded-lg font-semibold text-white transition disabled:opacity-50"
               >
