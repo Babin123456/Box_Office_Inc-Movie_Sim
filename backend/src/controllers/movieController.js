@@ -261,7 +261,16 @@ export const generateTitle = async (req, res) => {
 export const releaseMovie = async (req, res) => {
     try {
         const { id } = req.params;
-        const movie = await Movie.findById(id);
+
+        // Ownership is enforced in the query, not after it.
+        //
+        // Filtering by studioId means a movie belonging to another studio is
+        // never loaded, so the 404 below covers both "no such movie" and "not
+        // yours" — a caller probing IDs learns nothing either way.
+        const ownerStudio = await Studio.findOne({ owner: req.user._id }).select("_id").lean();
+        if (!ownerStudio) return res.status(404).json({ success: false, message: "Studio not found" });
+
+        const movie = await Movie.findOne({ _id: id, studioId: ownerStudio._id });
         if (!movie) return res.status(404).json({ success: false, message: "Movie not found" });
         if (movie.status !== "READY_FOR_RELEASE") {
             return res.status(400).json({ success: false, message: "Movie is not ready for release" });
@@ -298,7 +307,10 @@ export const scheduleRelease = async (req, res) => {
             return res.status(400).json({ success: false, message: "scheduledReleaseWeek must be in the future." });
         }
 
-        const movie = await Movie.findById(id);
+        const studio = await Studio.findOne({ owner: req.user._id }).select("_id").lean();
+        if (!studio) return res.status(404).json({ success: false, message: "Studio not found" });
+
+        const movie = await Movie.findOne({ _id: id, studioId: studio._id });
         if (!movie) return res.status(404).json({ success: false, message: "Movie not found" });
         if (movie.status !== "READY_FOR_RELEASE" && movie.status !== "POST_PRODUCTION") {
             return res.status(400).json({ success: false, message: "Only post-production or ready-for-release movies can be scheduled." });
@@ -340,7 +352,10 @@ export const getReleasedMovies = async (req, res) => {
 
 export const getMovieDetails = async (req, res) => {
     try {
-        const movie = await Movie.findById(req.params.id).lean();
+        const studio = await Studio.findOne({ owner: req.user._id }).select("_id").lean();
+        if (!studio) return res.status(404).json({ success: false, message: "Studio not found" });
+
+        const movie = await Movie.findOne({ _id: req.params.id, studioId: studio._id }).lean();
         if (!movie) return res.status(404).json({ success: false, message: "Movie not found" });
 
         const gameState = await GameState.findOne({ user: req.user._id }).lean();
@@ -356,7 +371,10 @@ export const getMovieDetails = async (req, res) => {
 
 export const getMovieTracking = async (req, res) => {
     try {
-        const movie = await Movie.findById(req.params.id).lean();
+        const studio = await Studio.findOne({ owner: req.user._id }).select("_id").lean();
+        if (!studio) return res.status(404).json({ success: false, message: "Studio not found" });
+
+        const movie = await Movie.findOne({ _id: req.params.id, studioId: studio._id }).lean();
         if (!movie) return res.status(404).json({ success: false, message: "Movie not found" });
 
         const allowedStatuses = ["READY_FOR_RELEASE", "POST_PRODUCTION", "PRODUCTION"];
@@ -395,7 +413,21 @@ export const addMarketingCampaign = async (req, res) => {
     let effectiveHype = 0;
 
     await withTransaction(async (session) => {
-      movie = await Movie.findById(id).session(session);
+      // The studio is resolved first, so the movie lookup can filter on it.
+      //
+      // Previously the movie was fetched with no ownership filter and the
+      // studio only afterwards, at which point funds were deducted from the
+      // *caller's* studio for a campaign attached to someone else's movie —
+      // paying to promote a rival's film, or draining a balance by repeating
+      // the call.
+      studio = await Studio.findOne({ owner: req.user._id }).session(session);
+      if (!studio) {
+        const error = new Error("Studio not found");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      movie = await Movie.findOne({ _id: id, studioId: studio._id }).session(session);
       if (!movie) {
         const error = new Error("Movie not found");
         error.statusCode = 404;
@@ -411,13 +443,6 @@ export const addMarketingCampaign = async (req, res) => {
       if (movie.marketingCampaigns.includes(campaignId)) {
         const error = new Error("This campaign is already active for this movie");
         error.statusCode = 400;
-        throw error;
-      }
-
-      studio = await Studio.findOne({ owner: req.user._id }).session(session);
-      if (!studio) {
-        const error = new Error("Studio not found");
-        error.statusCode = 404;
         throw error;
       }
 
@@ -472,7 +497,12 @@ export const reReleaseMovie = async (req, res) => {
     const { id } = req.params;
     const { isDirectorsCut } = req.body;
 
-    const movie = await Movie.findById(id);
+    const ownerStudio = await Studio.findOne({ owner: req.user._id }).select("_id").lean();
+    if (!ownerStudio) {
+      return res.status(404).json({ success: false, message: "Studio not found." });
+    }
+
+    const movie = await Movie.findOne({ _id: id, studioId: ownerStudio._id });
     if (!movie) {
       return res.status(404).json({
         success: false,
