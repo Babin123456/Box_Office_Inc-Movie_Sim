@@ -27,7 +27,6 @@ import {
   validateLeadActor,
   validateSupportingActors,
   validateCrewTeam,
-  validateMarketingBudget,
   findScriptById,
   ValidationError,
 } from "../services/movie/movieValidationService.js";
@@ -93,9 +92,6 @@ export const createMovie = async (req, res) => {
       return res.status(400).json({ success: false, message: "Insufficient funds for marketing" });
     }
     studio.money = updatedStudio.money;
-
-    // Validate Studio Money for Marketing Budget (in-memory guard for downstream logic)
-    validateMarketingBudget(studio, marketingBudget, marketingCampaignIds);
 
     // Soundtrack selection
     const soundtrackTierId = soundtrackTier || "PUBLIC_DOMAIN";
