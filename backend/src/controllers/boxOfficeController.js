@@ -6,6 +6,7 @@
  */
 
 import Movie from "../models/Movie.js";
+import Studio from "../models/Studio.js";
 import { generateBoxOfficeTelemetry, calculateRegionalBreakdown, computeClashImpactSummary } from "../utils/boxOfficeAnalytics.js";
 
 /**
@@ -69,8 +70,14 @@ export const getBoxOfficeClashAnalytics = async (req, res, next) => {
  */
 export const getRegionalSummary = async (req, res, next) => {
   try {
-    const movies = await Movie.find({ userId: req.user._id, status: "RELEASED" });
-    
+    // Movies key off studioId, not userId — resolve the caller's studio first.
+    const studio = await Studio.findOne({ owner: req.user._id });
+    if (!studio) {
+      return res.status(404).json({ success: false, message: "Studio not found" });
+    }
+
+    const movies = await Movie.find({ studioId: studio._id, status: "RELEASED" });
+
     let globalNorthAmerica = 0;
     let globalEurope = 0;
     let globalAsiaPacific = 0;
