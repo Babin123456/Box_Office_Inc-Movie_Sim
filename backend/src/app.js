@@ -43,6 +43,7 @@ import testScreeningRoutes from "./routes/testScreeningRoutes.js";
 import recordsRoutes from "./routes/recordsRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
 import territoryRoutes from "./routes/territoryRoutes.js";
+import boxOfficeRoutes from "./routes/boxOfficeRoutes.js";
 
 
 const app = express();
@@ -137,6 +138,7 @@ app.use("/api/movies", apiRateLimiter, testScreeningRoutes);
 app.use("/api/records", apiRateLimiter, recordsRoutes);
 app.use("/api/insurance", apiRateLimiter, insuranceRoutes);
 app.use("/api/territories", apiRateLimiter, territoryRoutes);
+app.use("/api/box-office", apiRateLimiter, boxOfficeRoutes);
 
 
 app.use((req, res) => {
