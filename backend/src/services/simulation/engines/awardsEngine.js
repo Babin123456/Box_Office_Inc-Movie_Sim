@@ -1,5 +1,6 @@
 import Movie from "../../../models/Movie.js";
 import Studio from "../../../models/Studio.js";
+import Notification from "../../../models/Notification.js";
 
 // Awards run annually at Week 52.
 export const processAnnualAwards = async (gameState, studio) => {
@@ -55,17 +56,26 @@ export const processAnnualAwards = async (gameState, studio) => {
             studio.prestige += 500;
         }
 
-        if (won) {
-            gameState.notifications.push({
-                message: `🏆 Annual Awards! Your studio won: ${messages.join(", ")}! You gained massive prestige!`,
-                createdAt: new Date()
-            });
-        } else {
-            gameState.notifications.push({
-                message: `🏆 Annual Awards Year ${year}: Best Picture goes to '${bestPicture.title}'.`,
-                createdAt: new Date()
-            });
-        }
+        // Notifications are their own collection, not a field on gameState.
+        //
+        // This pushed to `gameState.notifications`, which the GameState schema
+        // does not declare — so it was always undefined and the push threw
+        // `Cannot read properties of undefined (reading 'push')`, failing the
+        // whole weekly tick with a 500 and rolling back the transaction. Since
+        // awards run on week 52, 104 and so on, the simulation became
+        // impossible to advance past the first year end.
+        //
+        // Every other writer in the codebase uses Notification.create with a
+        // gameStateId, which is what the client reads from; anything pushed
+        // onto gameState would not have been displayed even had it persisted.
+        await Notification.create({
+            gameStateId: gameState._id,
+            type: "AWARDS",
+            message: won
+                ? `🏆 Annual Awards! Your studio won: ${messages.join(", ")}! You gained massive prestige!`
+                : `🏆 Annual Awards Year ${year}: Best Picture goes to '${bestPicture.title}'.`,
+            createdAt: new Date(),
+        });
     }
 };
 
