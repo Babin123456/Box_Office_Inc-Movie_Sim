@@ -529,11 +529,6 @@ export const reReleaseMovie = async (req, res) => {
       });
     }
   
-    const script = findScriptById(gameState, movie.scriptId);
-    
-    const genres = script?.genres || [];
-    const effectiveHype = getEffectiveHypeBoost(campaign, genres);
-
     // Calculate re-release box office (decaying factor of original)
     const decayFactor = isDirectorsCut ? 0.35 : 0.2;
     const qualityBoost = isDirectorsCut ? 10 : 0;
