@@ -116,11 +116,6 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: Bell,
     },
     {
-      name: "Talent",
-      path: "/talent",
-      icon: Users,
-    },
-    {
       name: "Talent Academy",
       path: "/talent/academy",
       icon: Users,

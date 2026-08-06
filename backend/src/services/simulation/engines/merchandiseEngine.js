@@ -1,6 +1,7 @@
 import Movie from "../../../models/Movie.js";
 import Studio from "../../../models/Studio.js";
 import { SOUNDTRACK_TIERS } from "../../../constants/soundtrackTiers.js";
+import Notification from "../../../models/Notification.js";
 
 // Merchandise sales generated based on movie's hype and existing popularity.
 // Only movies with a threshold of success or hype will start generating sales.
@@ -78,11 +79,16 @@ export const processMerchandiseSales = async (gameState, studio) => {
             reason: "Weekly Merchandise & Licensing Sales"
         });
 
-        // We could also add a notification if revenue is high
+        // Same defect as awardsEngine: gameState.notifications is not a field
+        // on the schema, so this push threw on undefined. It bites harder here
+        // because merchandise runs every week rather than annually — any studio
+        // clearing ₹1M in a week failed its tick entirely.
         if (weeklyMerchRevenue > 1000000) {
-            gameState.notifications.push({
+            await Notification.create({
+                gameStateId: gameState._id,
+                type: "MERCHANDISE",
                 message: `Merchandise & Licensing generated ₹${weeklyMerchRevenue.toLocaleString()} this week!`,
-                createdAt: new Date()
+                createdAt: new Date(),
             });
         }
     }
