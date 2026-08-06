@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import api, { persistAuthSession } from "../../api/axios";
 import { useAsyncAction } from "../../hooks/useAsyncAction";
@@ -13,6 +15,28 @@ import { GoogleLogin } from '@react-oauth/google';
 const Register = () => {
   const navigate = useNavigate();
   const { loading, error, execute } = useAsyncAction();
+
+
+  // Local state for the two-step Google sign-in.
+  //
+  // A first-time Google user has no studio yet, so the backend answers
+  // { requiresStudio: true } rather than a session (authController.js:476). The
+  // component holds the credential and swaps the Google button for a studio-name
+  // form, then sends both back together.
+  //
+  // These declarations were missing entirely — the handlers and JSX referenced
+  // them without any being declared, and `requiresStudio is not defined` was
+  // just the first one the browser reached.
+  const dispatch = useDispatch();
+  const [googleLoginMutation, { isLoading }] = useGoogleLoginMutation();
+
+  const [requiresStudio, setRequiresStudio] = useState(false);
+  const [pendingToken, setPendingToken] = useState(null);
+  const [googleStudioName, setGoogleStudioName] = useState("");
+
+  // useAsyncAction owns `error` for the email/password form; this is the
+  // separate message for the Google path, which doesn't run through it.
+  const [googleError, setError] = useState("");
 
   const { values, errors, touched, setValue, validate } = useFormValidation(
     { username: "", email: "", password: "", studioName: "" },

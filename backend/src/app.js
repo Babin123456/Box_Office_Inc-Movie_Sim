@@ -42,8 +42,8 @@ import contractRoutes from "./routes/contractRoutes.js";
 import testScreeningRoutes from "./routes/testScreeningRoutes.js";
 import recordsRoutes from "./routes/recordsRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
-import territoryRoutes from "./routes/territoryRoutes.js";
-import boxOfficeRoutes from "./routes/boxOfficeRoutes.js";
+import facilityRoutes from "./routes/facilityRoutes.js";
+import agencyRoutes from "./routes/agencyRoutes.js";
 
 
 const app = express();
@@ -141,6 +141,8 @@ import merchandiseRoutes from "./routes/merchandiseRoutes.js";
 
 app.use("/api/merchandise", apiRateLimiter, merchandiseRoutes);
 app.use("/api/crisis", apiRateLimiter, crisisRoutes);
+app.use("/api/facilities", apiRateLimiter, facilityRoutes);
+app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
 
 
 app.use((req, res) => {
