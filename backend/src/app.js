@@ -43,6 +43,7 @@ import testScreeningRoutes from "./routes/testScreeningRoutes.js";
 import recordsRoutes from "./routes/recordsRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
 import territoryRoutes from "./routes/territoryRoutes.js";
+import boxOfficeRoutes from "./routes/boxOfficeRoutes.js";
 
 
 const app = express();

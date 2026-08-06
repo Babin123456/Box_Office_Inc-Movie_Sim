@@ -3,6 +3,11 @@ import "./helpers/testEnv.js";
 import test, { before, after } from "node:test";
 import assert from "node:assert";
 import mongoose from "mongoose";
+import {
+  registerStudio,
+  authGet,
+  authPost,
+} from "./helpers/gameplayHelpers.js";
 import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 // ---------------------------------------------------------------------------
@@ -82,7 +87,11 @@ const authPost = (path, token) =>
   });
 
 test("e2e: register seeds a studio with 10,000,000 starting funds", async () => {
+
+  const { token, studio } = await registerStudio(baseUrl);
+
   const { token, studio } = await registerStudio();
+
 
   assert.ok(token, "registration returns an access token");
   assert.strictEqual(studio.money, 10000000);
@@ -111,7 +120,7 @@ test("e2e: newly registered studio starts with an empty owned actor roster", asy
 });
 
 test("e2e: register -> browse actor market -> hire moves an actor to the owned roster", async () => {
-  const { token } = await registerStudio();
+  const { token } = await registerStudio(baseUrl);
 
   const marketRes = await authGet("/api/actors/", token);
   assert.strictEqual(marketRes.status, 200);
@@ -208,4 +217,25 @@ test("e2e: gameplay endpoints reject unauthenticated access with 401", async () 
   const res = await fetch(`${baseUrl}/api/actors/`);
 
   assert.strictEqual(res.status, 401);
+
+});
+test("e2e: gameplay endpoints reject malformed JWT tokens with 401", async () => {
+  const malformedToken = "malformed.jwt.token";
+
+  const marketRes = await authGet("/api/actors/", malformedToken);
+  assert.strictEqual(marketRes.status, 401);
+
+  const hireRes = await authPost("/api/actors/hire/0", malformedToken);
+  assert.strictEqual(hireRes.status, 401);
+});
+
+test("e2e: gameplay endpoints reject invalid bearer tokens with 401", async () => {
+  const invalidToken = "this-is-not-a-valid-jwt";
+
+  const marketRes = await authGet("/api/actors/", invalidToken);
+  assert.strictEqual(marketRes.status, 401);
+
+  const hireRes = await authPost("/api/actors/hire/0", invalidToken);
+  assert.strictEqual(hireRes.status, 401);
+
 });
