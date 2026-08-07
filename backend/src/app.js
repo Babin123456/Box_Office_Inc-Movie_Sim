@@ -141,8 +141,8 @@ app.use("/api/insurance", apiRateLimiter, insuranceRoutes);
 app.use("/api/merchandise", apiRateLimiter, merchandiseRoutes);
 app.use("/api/academy-awards", apiRateLimiter, awardsRoutes);
 app.use("/api/crisis", apiRateLimiter, crisisRoutes);
-app.use("/api/facilities", apiRateLimiter, facilityRoutes);
-app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
+// app.use("/api/facilities", apiRateLimiter, facilityRoutes);
+// app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
 
 
 app.use((req, res) => {
