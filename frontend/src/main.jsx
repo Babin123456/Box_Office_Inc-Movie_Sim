@@ -11,7 +11,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <ThemeProvider>
-        <App />
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "placeholder-client-id"}>
+          <App />
+        </GoogleOAuthProvider>
       </ThemeProvider>
     </Provider>
   </StrictMode>,

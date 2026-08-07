@@ -7,6 +7,9 @@ import { logout } from "../features/auth/authSlice";
 import api from "../api/axios";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 
+// Persists across route navigations (module stays loaded once per session)
+let studioProfileFetched = false;
+
 const ProtectedRoute = ({ children }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -61,12 +64,13 @@ const ProtectedRoute = ({ children }) => {
   // don't flash with empty state on hard refresh.
   useEffect(() => {
     let isMounted = true;
-    if (!token || studioLoaded) return;
+    if (!token || studioProfileFetched) return;
 
     const loadStudioData = async () => {
       setStudioLoading(true);
       try {
         await api.get("/studios/profile");
+        studioProfileFetched = true;
       } catch {
         // Non-fatal: if the studio fetch fails we still proceed.
         // The individual page will show its own error state.
@@ -83,7 +87,7 @@ const ProtectedRoute = ({ children }) => {
     return () => {
       isMounted = false;
     };
-  }, [token, studioLoaded]);
+  }, [token]);
 
   if (checkingSession) {
     return (
