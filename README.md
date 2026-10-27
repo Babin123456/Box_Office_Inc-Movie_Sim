@@ -1,6 +1,6 @@
 # 🎬 Box Office Inc - Movie Studio Simulator
 
-A full-stack **Movie Studio Tycoon** simulation game where you build a cinematic empire, hire talent, produce blockbuster movies, and dominate the global box office.
+A full-stack **movie studio management and entertainment-industry simulation game**. Build a cinematic empire by hiring creative talent, producing films, planning marketing campaigns, releasing movies, and growing your studio through box-office revenue, fans, and prestige.
 
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Open Source](https://img.shields.io/badge/Open%20Source-Welcome-brightgreen)
@@ -9,256 +9,191 @@ A full-stack **Movie Studio Tycoon** simulation game where you build a cinematic
 
 ---
 
-## 🚀 Open Source Programs
+## Open-source programs
 
-This repository is an official participating project in:
+This repository participates in **ECSOC 2026** and **ELUSOC 2026**. The project has also been selected for **Nexus Spring of Code (NSoC) Winter Edition 2026**.
 
-- 🌟 **ECSOC 2026**
-- 🚀 **ELUSOC 2026**
+- **NSoC project:** Box Office Inc - Movie Studio Simulator
+- **Project Admin / Project Kernel:** Sahil Raj Verma
+- **Tech stack:** React, Node.js, Express.js, MongoDB
+- **Program website:** [NSoC](https://www.nsoc.in/)
+- **Project repository:** [GitHub](https://github.com/SRV30/Box_Office_Inc-Movie_Sim)
 
-Please read **[CONTRIBUTING.md](CONTRIBUTING.md)** before submitting any contribution.
-
----
-
-## 🎬 Overview
-
-Become the head of your own movie studio and experience every stage of filmmaking—from discovering scripts and hiring actors to managing production, marketing, and worldwide theatrical releases.
-
-Every decision affects your studio's reputation, finances, and long-term success.
+Contributors should follow the workflow in [CONTRIBUTING.md](CONTRIBUTING.md), work on meaningful project issues, and submit focused pull requests for review. Follow any additional instructions published by NSoC organizers.
 
 ---
 
-## ✨ Features
+## Overview
 
-### 🏢 Studio Management
+Become the head of your own movie studio and experience every stage of filmmaking—from discovering scripts and hiring actors to managing production, marketing, and worldwide theatrical releases. Your decisions affect the studio's reputation, finances, and long-term success.
+
+## Features
+
+### Studio management
 - Financial management
 - Studio reputation system
 - Weekly payroll
-- Revenue & expense tracking
+- Revenue and expense tracking
 
-### 🎭 Talent Management
-- Hire Writers
-- Hire Directors
-- Recruit Actors
-- Manage Production Crews
-- Talent progression
+### Talent management
+- Hire writers and directors
+- Recruit actors
+- Manage production crews
+- Progress talent over time
 
-### 🎥 Movie Production
+### Movie production
 - Script marketplace
 - Multi-stage production pipeline
 - Marketing campaigns
 - Movie release management
 
-### 📊 Simulation
+### Simulation and analytics
 - Weekly simulation engine
 - Dynamic box office
-- Audience & critic ratings
+- Audience and critic ratings
 - Financial analytics
 
----
-
-## 🛠 Tech Stack
+## Technology stack
 
 | Layer | Technologies |
-|--------|--------------|
-| Frontend | React, Vite, Redux Toolkit, TailwindCSS |
+| --- | --- |
+| Frontend | React, Vite, Redux Toolkit, Tailwind CSS |
 | Backend | Node.js, Express.js |
-| Database | MongoDB Atlas |
-| Deployment | Vercel |
+| Database | MongoDB |
+| Deployment | Vercel (frontend deployment configuration) |
 
----
-
-## 💻 Local Setup
+## Local setup
 
 ### Prerequisites
+- Node.js (use the version supported by the project package files)
+- npm
+- MongoDB connection string
 
-- Node.js v18+
-- MongoDB
+### 1. Clone the repository
+```bash
+git clone https://github.com/SRV30/Box_Office_Inc-Movie_Sim.git
+cd Box_Office_Inc-Movie_Sim
+```
 
-### Backend
+### 2. Configure environment variables
 
+Create local environment files from the provided examples:
+
+- Copy `backend/.env.example` to `backend/.env`
+- Copy `frontend/.env.example` to `frontend/.env`
+
+Fill in the required values locally. **Never commit real secrets or production credentials.** See the environment-variable reference below.
+
+### 3. Start the backend
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-### Frontend
+### 4. Start the frontend
 
+In a second terminal, from the repository root:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Create `.env` files using the provided examples before running the project.
+Use the local URLs printed by the development servers. Confirm the actual scripts and required environment variables in the relevant package files before troubleshooting setup issues.
 
-### Seeding the V1 Market
-To seed the simulation with 99 AI competitor studios, 1,000 actors, 300 directors, 500 writers, and 300 composers:
+### Seed the V1 market
+
+To seed the simulation with competitor studios and talent records, run the following from the repository root:
 ```bash
 cd backend
 node src/scripts/seedIndustryMarket.js
 ```
 
-### Documentation & Architecture Guides
-- 📖 [V1 Release Architecture & Quality Gate](docs/V1_RELEASE_ARCHITECTURE_AND_QUALITY_GATE.md)
-- 🧪 [V1 Simulation Acceptance Report](docs/V1_SIMULATION_ACCEPTANCE_REPORT.md)
-- 🏗️ [System Architecture](ARCHITECTURE.md)
-- 🤝 [Contributing Guidelines](CONTRIBUTING.md)
+Run seed scripts only against the intended development database. Review the script before running it against any database containing data you need to preserve.
 
-### Environment Variables
+## Environment variables
 
-#### Backend (`backend/.env`)
+### Backend (`backend/.env`)
 
 | Variable | Required | Description | Example |
-|---|---|---|---|
-| `MONGO_URI` | ✅ Yes | MongoDB Atlas connection string | `mongodb+srv://user:pass@cluster.mongodb.net/dbname` |
-| `JWT_ACCESS_SECRET` | ✅ Yes | Secret key for signing access tokens | `your-64-char-random-string` |
-| `JWT_REFRESH_SECRET` | ✅ Yes | Secret key for signing refresh tokens | `your-64-char-random-string` |
-| `CLIENT_URL` | ✅ Yes | Frontend URL used for CORS | `http://localhost:5173` |
-| `PORT` | ❌ No | Port the backend server listens on | `5000` |
-| `NODE_ENV` | ❌ No | Environment mode | `development` |
-| `JWT_ACCESS_EXPIRE` | ❌ No | Access token expiry duration | `15m` |
-| `JWT_REFRESH_EXPIRE` | ❌ No | Refresh token expiry duration | `30d` |
+| --- | --- | --- | --- |
+| `MONGO_URI` | Yes | MongoDB connection string | `mongodb+srv://<user>:<password>@<cluster>/<database>` |
+| `JWT_ACCESS_SECRET` | Yes | Secret used to sign access tokens | Generate a unique random secret |
+| `JWT_REFRESH_SECRET` | Yes | Secret used to sign refresh tokens | Generate a different random secret |
+| `CLIENT_URL` | Yes | Frontend origin used for CORS | `http://localhost:5173` |
+| `PORT` | No | Backend port | `5000` |
+| `NODE_ENV` | No | Runtime environment | `development` |
+| `JWT_ACCESS_EXPIRE` | No | Access-token lifetime | `15m` |
+| `JWT_REFRESH_EXPIRE` | No | Refresh-token lifetime | `30d` |
 
-#### Frontend (`frontend/.env`)
+### Frontend (`frontend/.env`)
 
 | Variable | Required | Description | Example |
-|---|---|---|---|
-| `VITE_BACKEND_API_URL` | ✅ Yes | Backend API base URL | `http://localhost:5000/api` |
+| --- | --- | --- | --- |
+| `VITE_BACKEND_API_URL` | Yes | Backend API base URL | `http://localhost:5000/api` |
 
-> **Tip:** Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env`, then fill in your values.
+Use the committed `.env.example` files as the source of truth for required keys. Do not put server-side secrets in frontend environment variables; Vite-exposed variables are included in client-side code.
 
----
+## Documentation
 
-## 🌍 Deployment
+- [System architecture](ARCHITECTURE.md)
+- [V1 release architecture and quality gate](docs/V1_RELEASE_ARCHITECTURE_AND_QUALITY_GATE.md)
+- [V1 simulation acceptance report](docs/V1_SIMULATION_ACCEPTANCE_REPORT.md)
+- [Contribution guidelines](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
 
-Deploy using **Vercel** and **MongoDB Atlas**.
-
-Required environment variables include:
-
-- `MONGO_URI`
-- `JWT_ACCESS_SECRET`
-- `JWT_REFRESH_SECRET`
-- `CLIENT_URL`
-- `NODE_ENV`
-- `VITE_BACKEND_API_URL`
-
----
-
-## 📁 Project Structure
+## Project structure
 
 ```text
 backend/
- ├── api/
- ├── src/
- │   ├── config/
- │   ├── controllers/
- │   ├── models/
- │   ├── routes/
- │   ├── services/
- │   └── utils/
+  api/
+  src/
+    config/
+    controllers/
+    models/
+    routes/
+    services/
+    utils/
 
 frontend/
- ├── src/
- │   ├── api/
- │   ├── app/
- │   ├── components/
- │   ├── features/
- │   └── pages/
+  src/
+    api/
+    app/
+    components/
+    features/
+    pages/
 ```
 
----
+This is a simplified overview; consult the actual directories and [ARCHITECTURE.md](ARCHITECTURE.md) for details.
 
-## 🛠 Scripts
+## Development and quality
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Run development server |
-| `npm run build` | Build frontend |
-| `npm start` | Start backend |
+Before opening a pull request, run the relevant tests and build commands available in the frontend and backend package files. Include the commands run and their results in the PR description. Do not claim tests passed unless they were actually run.
 
----
+## Contributing
 
-## 🤝 Contribution Guide
+We welcome focused contributions that improve gameplay, reliability, accessibility, security, testing, and documentation.
 
-We welcome contributors from both open-source programs.
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md).
+2. Search existing issues and pull requests to avoid duplicates.
+3. Ask for issue assignment or maintainer approval before beginning substantial work.
+4. Keep changes scoped to the issue and add or update tests where appropriate.
+5. Open a pull request that explains the problem, solution, testing, and any user-visible changes.
 
-Please read **[CONTRIBUTING.md](CONTRIBUTING.md)** before contributing.
+For ECSOC/ELUSOC-specific contribution labels, follow the instructions in [CONTRIBUTING.md](CONTRIBUTING.md). For NSoC, follow the current official program guidance and any instructions from the organizers; do not assume a program-specific label unless it has been specified.
 
-### 🌟 ECSOC 2026
+## Roadmap
 
-- Request issue assignment before starting work.
-- If you create an issue, add the **`ECSOC2026`** label.
-- If you create a PR, mention it is for **ECSOC 2026** and request the appropriate labels.
-- During review, project admins will apply the **`ECSoC26`** label **before merging** so ECSOC Sentinel can automatically process your contribution.
+Potential future improvements include AI studios, an awards system, franchises and sequels, seasonal events, dynamic industry trends, and multiplayer features. These are roadmap ideas and should not be interpreted as already implemented.
 
----
+## License
 
-## 🌿 Branch Rules
+This project is distributed under the [MIT License](LICENSE).
 
-| Branch | Purpose |
-|---------|---------|
-| `main` | Stable production branch |
+## Links
 
----
-
-## 🏷 Labels
-
-### General
-
-- `bug`
-- `enhancement`
-- `documentation`
-- `frontend`
-- `backend`
-- `performance`
-- `security`
-- `testing`
-- `refactor`
-- `good first issue`
-- `help wanted`
-
-### ECSOC
-
-- `ECSOC2026`
-- `ECSoC26`
-- `good-issue`
-- `good-pr`
-- `good-ui`
-- `good-backend`
-
----
-
-## 🛣 Roadmap
-
-- AI Studios
-- Awards System
-- Franchise & Sequels
-- Seasonal Events
-- Dynamic Industry Trends
-- Multiplayer Mode
-
----
-
-## ❤️ Open Source
-
-Box Office Inc - Movie Studio Simulator is licensed under the **MIT License**.
-
-We welcome contributions from developers worldwide through **ECSOC 2026**, **ELUSOC 2026**, and the open-source community.
-
-If you're interested in contributing, please read **[CONTRIBUTING.md](CONTRIBUTING.md)** before getting started.
-
----
-
-## ⭐ Support
-
-If you find this project useful:
-
-- ⭐ Star the repository
-- 🍴 Fork the project
-- 🐛 Report bugs
-- 💡 Suggest new features
-- 🚀 Contribute through ECSOC 2026 or ELUSOC 2026
-
-Happy Coding! 🎬
+- [Live application](https://box-office-inc-movie-sim.vercel.app)
+- [GitHub issues](https://github.com/SRV30/Box_Office_Inc-Movie_Sim/issues)
+- [NSoC Winter Edition](https://www.nsoc.in/)
