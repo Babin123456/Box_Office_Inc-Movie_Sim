@@ -2,74 +2,57 @@
 
 ## Supported Versions
 
-We currently support security updates for the latest stable release.
+Security fixes are intended for the latest stable release.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
+| Version | Supported |
+| --- | --- |
+| Latest stable release | Yes |
 
 ## Reporting a Vulnerability
 
-We take the security of Box Office Inc seriously. If you believe you have found a security vulnerability, please report it to us as described below.
+Please do not disclose exploitable vulnerabilities in public issues or pull requests.
 
-### Please Do NOT
+Report suspected vulnerabilities through GitHub's private vulnerability reporting feature, if enabled for this repository. Otherwise, contact the maintainers privately using contact information available through the repository owner's GitHub profile.
 
-- Open a public GitHub issue for the vulnerability.
-- Share the vulnerability with others before it has been addressed.
+Include, where possible:
+- A clear description of the issue and its potential impact.
+- Steps to reproduce or a minimal proof of concept.
+- Affected routes, components, versions, or configurations.
+- Any suggested mitigation.
 
-### How to Report
+Avoid including real user data, credentials, or production secrets in reports.
 
-Send a detailed report to the repository maintainers via:
+## Contributor security practices
 
-1. **GitHub Security Advisory**: Navigate to the repository's "Security" tab and use the "Report a vulnerability" feature.
-2. **Email**: Contact the project maintainers directly through the repository's contact information.
+### Secrets and authentication
 
-Please include the following in your report:
-
-- A description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Any suggested fixes (if known)
-
-### Response Timeline
-
-- **Acknowledgment**: We will acknowledge your report within 48 hours.
-- **Verification**: We will verify the vulnerability within 5 business days.
-- **Fix Timeline**: A fix will be developed and released based on the severity:
-  - Critical: 48 hours
-  - High: 1 week
-  - Medium: 2 weeks
-  - Low: Next release cycle
-
-## Security Best Practices for Contributors
-
-### Authentication & Tokens
-
-- Never commit `.env` files or any files containing real secrets.
-- Use the provided `backend/.env.example` and `frontend/.env.example` as templates.
-- JWT secrets must be at least 64 characters of random entropy in production.
-- Refresh tokens are stored as SHA-256 hashes; never log or expose raw tokens.
+- Never commit local `.env` files, tokens, private keys, or production credentials.
+- Use `backend/.env.example` and `frontend/.env.example` as templates.
+- Generate unique, high-entropy JWT secrets for each environment.
+- Never log or expose raw access tokens, refresh tokens, or credentials.
+- If a secret is committed accidentally, revoke or rotate it immediately. Removing it from the latest commit does not remove it from Git history.
 
 ### Database
 
-- MongoDB connection strings should use strong passwords and IP allowlists.
-- Use separate databases for development, testing, and production.
-- The application uses Mongoose 9 with schema validation - do not disable it.
+- Use separate databases and credentials for development, testing, and production.
+- Restrict database network access and use strong credentials.
+- Do not run seed scripts against databases containing data that must be preserved.
+- Keep schema validation enabled and validate data at trust boundaries.
 
-### API Security
+### API and frontend
 
-- All API endpoints except auth routes require JWT authentication via the `protect` middleware.
-- Input validation is enforced via Zod schemas - do not bypass it.
-- CORS is configured to allow only trusted origins.
+- Preserve authentication and authorization checks on protected endpoints.
+- Validate untrusted input and return safe error messages.
+- Configure CORS to allow only intended origins.
+- Remember that frontend environment variables prefixed with `VITE_` are exposed in client-side bundles. Never place server secrets in them.
 
-### Frontend
+### Dependency management and CI
 
-- Environment variables prefixed with `VITE_` are exposed to the client bundle.
-- Do not store sensitive secrets or API keys in frontend environment variables.
-- The frontend uses Axios interceptors for consistent error handling.
+- Dependabot is configured to propose dependency updates.
+- CI currently runs backend tests and frontend lint/build checks. **The workflow does not currently run `npm audit`**, so do not treat a passing CI run as proof that dependencies have no known vulnerabilities.
+- Contributors can run `npm audit` from `backend/` and `frontend/` and report relevant findings with their package, severity, and remediation.
+- Do not blindly apply breaking dependency upgrades. Review advisories, test the application, and explain any accepted risk.
 
-## Dependency Management
+## Scope
 
-- Dependencies are audited during CI builds.
-- Please keep dependencies up to date using `npm audit` before submitting PRs.
-- Report any vulnerable dependencies through the channels above.
+This policy describes the intended reporting process and contributor practices. It is not a guarantee that every security control is enabled or that the application has undergone a complete security assessment.
