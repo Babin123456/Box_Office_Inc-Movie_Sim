@@ -1,256 +1,122 @@
 # Contributing to Box Office Inc - Movie Studio Simulator
 
-First off, thank you for considering contributing to **Box Office Inc - Movie Studio Simulator**! 🎉
+Thank you for helping improve **Box Office Inc - Movie Studio Simulator**. Contributions should be useful, focused, tested, and respectful of the project's existing architecture.
 
-Your contributions help make Box Office Inc - Movie Studio Simulator a better movie studio management and simulation experience for everyone.
+## Programs
 
-This repository is an official participating project in:
+This repository participates in ECSOC 2026 and ELUSOC 2026 and has been selected for Nexus Spring of Code (NSoC) Winter Edition 2026.
 
-- 🌟 **ECSOC 2026**
-- 🚀 **ELUSOC 2026**
+- **NSoC Project Admin / Project Kernel:** Sahil Raj Verma
+- **NSoC website:** https://www.nsoc.in/
 
-Please read the following guidelines carefully before contributing.
+Follow any current program-specific instructions supplied by the organizers. Do not assume an NSoC-specific issue or pull-request label unless the organizers or project maintainers explicitly request it.
 
----
+## Contribution workflow
 
-# Open Source Program Guidelines
+### 1. Find or discuss an issue
+- Search open and closed issues and pull requests before creating a new issue.
+- Choose an issue that describes a real bug, improvement, test, or documentation need.
+- Ask for assignment or maintainer approval before starting substantial work.
+- Clarify the expected outcome if the issue is ambiguous.
 
-## 🌟 ECSOC 2026
-
-- If you create a new issue related to ECSOC, please add the **`ECSOC2026`** label.
-- When opening your Pull Request, mention that it is an **ECSOC 2026** contribution and ensure the **`ECSOC2026`** label is applied if available.
-- During the review process, a project admin will apply the **`ECSoC26`** label **before the Pull Request is merged**. This ensures the ECSOC Sentinel bot can automatically detect and process your merged contribution without delays.
-
----
-
-# Contribution Workflow
-
-We follow a structured workflow to maintain high code quality.
-
-## 1. Find an Issue
-
-Browse the **Issues** section and choose an open issue.
-
-Please read the issue carefully before requesting assignment.
-
----
-
-## 2. Request Assignment
-
-Comment on the issue requesting assignment.
-
-Wait until a project admin assigns the issue before starting work.
-
-Contributions made without assignment may not be accepted.
-
----
-
-## 3. Fork & Clone the Repository
-
+### 2. Fork and clone
 ```bash
 git clone https://github.com/SRV30/Box_Office_Inc-Movie_Sim.git
 cd Box_Office_Inc-Movie_Sim
 ```
 
----
-
-## 4. Checkout the Correct Branch
-
-### ECSOC Contributors
-
+Create a branch for your change:
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feature/your-feature-name
+git checkout -b <type>/<short-description>
 ```
 
----
+Examples: `fix/movie-release-validation`, `feat/talent-search`, `docs/local-setup`.
 
-## 5. Development
+### 3. Develop responsibly
+- Keep the change focused on the issue.
+- Follow the existing code organization and naming conventions.
+- Avoid unrelated refactors and generated files.
+- Never commit credentials, tokens, private keys, production data, or local `.env` files.
+- Add or update tests for behavior changes when feasible.
+- Update documentation when commands, environment variables, APIs, or user-facing behavior change.
 
-While implementing your solution:
+### 4. Test your change
+Run the relevant tests, lint checks, and build commands defined by the frontend and backend package files. In the PR, list the exact commands run and their outcomes. If a check cannot be run, explain why rather than implying it passed.
 
-- Follow the existing project structure.
-- Keep your changes limited to the assigned issue.
-- Write clean, readable, and maintainable code.
-- Avoid unnecessary refactoring unrelated to the issue.
+For UI changes, check mobile and desktop layouts and attach screenshots when useful.
 
----
-
-## 6. Test Your Changes
-
-Before creating a Pull Request, make sure:
-
-- The application builds successfully.
-- Existing functionality is not broken.
-- New features work correctly.
-- No unnecessary warnings or console errors are introduced.
-
----
-
-## 7. Commit Your Changes
-
-Use meaningful commit messages following the Conventional Commits format.
-
-Examples:
-
+### 5. Commit with a clear message
+Use a concise, descriptive commit message. Examples:
 ```text
-feat: add actor search functionality
-fix: resolve movie production crash
-docs: update installation guide
-refactor: optimize weekly simulation engine
+feat: add actor search
+fix: validate movie release state
+docs: clarify local environment setup
+test: cover weekly simulation transitions
 ```
 
----
+### 6. Open a pull request
+A good PR should:
+- Explain the problem and the proposed solution.
+- Link the related issue (for example, `Closes #123`).
+- Describe the tests and checks actually run.
+- Include screenshots or recordings for significant UI changes.
+- Mention any migration, configuration, or environment-variable changes.
+- Be limited to the assigned or agreed scope.
 
-## 8. Open a Pull Request
+Request review from the project maintainers and respond constructively to feedback. Do not merge your own contribution unless you have the required permission and approval under the project's workflow.
 
-Your PR should:
+## Program-specific instructions
 
-- Link the related issue using:
+### NSoC Winter Edition 2026
+- Work on meaningful project issues and submit focused pull requests for maintainer review.
+- Follow the official NSoC website and any organizer-provided guidance for eligibility, issue assignment, PR review, labels, and contribution tracking.
+- Do not claim that a contribution is counted or accepted by the program until it meets the program's stated requirements.
 
-```text
-Closes #IssueNumber
-```
+### ECSOC 2026
+- For ECSOC-related issues, use the `ECSOC2026` label when applicable.
+- Mention the program in the PR when the contribution is for ECSOC.
+- Project admins apply the `ECSoC26` label during review before merging when required by the ECSOC Sentinel workflow.
 
-- Include a clear description of the changes.
-- Attach screenshots or screen recordings for UI changes.
-- Mention whether your contribution is for **ECSOC 2026** or **ELUSOC 2026**.
-- If you created the related issue, ensure it has the appropriate program label (`ECSOC2026` or `ELUSOC2026`).
-- Request that the corresponding program label be applied to your Pull Request if it has not already been added.
+### ELUSOC 2026
+- Identify ELUSOC-related contributions clearly in the issue or PR and follow the program-specific instructions provided by its organizers.
 
----
+## Project coding conventions
 
-## 9. Code Review
+### JavaScript
+- Use modern JavaScript consistent with the existing codebase.
+- Follow the repository's ESLint and Prettier configuration where configured.
 
-Project admins will review your Pull Request.
-
-Please address review comments promptly and update your PR if requested.
-
-For ECSOC contributions, project admins will apply the **`ECSoC26`** label during the review process **before the Pull Request is merged** to ensure successful processing by the ECSOC Sentinel automation.
-
----
-
-## 10. Merge
-
-Once approved, a project admin will merge your Pull Request.
-
-For **ECSOC 2026** contributions, the **`ECSoC26`** label will be added by a project admin **during the review phase before merging**. This allows the ECSOC Sentinel bot to automatically detect, evaluate, and score the Pull Request immediately after it is merged.
-
----
-
-# Coding Standards
-
-## JavaScript
-
-- Use modern ES6+ syntax.
-- Follow the project's ESLint and Prettier configuration.
-
-## React
-
-- Use functional components.
-- Prefer React Hooks.
+### React
+- Prefer functional components and hooks where consistent with existing patterns.
 - Keep components modular and reusable.
-- Use Redux Toolkit `createSlice` for state management.
-- Place API calls in custom hooks or service modules, not in components.
+- Keep API calls in the project's existing API/service layers rather than introducing new patterns without a clear reason.
+- Use the styling and state-management conventions already established in the codebase.
 
-## Naming Conventions
+### Naming
+- Variables and functions: `camelCase`
+- React components: `PascalCase`
+- Constants: follow the surrounding module's convention.
 
-- Variables → `camelCase`
-- Functions → `camelCase`
-- React Components → `PascalCase`
-- Constants → `UPPER_SNAKE_CASE`
-- File names match exported component names (e.g., `ActorCard.jsx` exports `ActorCard`).
-- Slice files are named with camelCase (`authSlice.js`, `movieSlice.js`).
+## Issues and collaboration
+- Search for duplicates before opening an issue.
+- Include clear reproduction steps for bugs, expected versus actual behavior, and relevant logs with secrets removed.
+- Be respectful in issue discussions and code reviews.
+- Do not submit spam, duplicate issues, or unrelated changes solely to increase contribution counts.
 
-## Styling
+## Pull request checklist
 
-- Use TailwindCSS utility classes. Avoid inline styles for layout.
-- Use CSS variables (via `ThemeContext`) for theme-aware colors.
-- Follow existing spacing patterns (p-4, p-6, gap-4, rounded-2xl, etc.).
-- Responsive design: test on mobile (375px) and desktop (1440px).
+- [ ] The change addresses the linked issue or agreed task.
+- [ ] The change is focused and follows the existing project structure.
+- [ ] Relevant tests/build/lint checks were run, and results are reported accurately.
+- [ ] Documentation and environment examples are updated when needed.
+- [ ] No secrets or local environment files are included.
+- [ ] Screenshots are included for meaningful UI changes.
+- [ ] Program-specific requirements have been followed where applicable.
 
-## Testing
+## Help
 
-- Backend: Node.js built-in test runner, files in `backend/tests/`.
-- Run `npm test` in the `backend/` directory.
-- Frontend tests should be added in `frontend/src/__tests__/` using Vitest.
+If you are unsure about scope or setup, ask in the relevant issue before investing in a large change.
 
-## Comments
-
-Write comments only where necessary to explain complex logic. Avoid redundant comments that restate the code.
-
----
-
-# Pull Request Checklist
-
-Before submitting your Pull Request, ensure that:
-
-- [ ] I have been assigned this issue.
-- [ ] My PR targets the correct branch.
-- [ ] My code builds successfully.
-- [ ] I tested my changes locally.
-- [ ] I followed the project's coding standards.
-- [ ] I linked the related issue.
-- [ ] I attached screenshots for UI changes (if applicable).
-- [ ] I indicated whether this contribution is for ECSOC 2026 or ELUSOC 2026.
-- [ ] The appropriate program label has been requested or applied.
-
----
-
-# Duplicate Issue Prevention
-
-Before creating a new issue, please search the existing issues (both open and closed).
-
-Duplicate issues may be closed.
-
-If you create a new issue, please apply the appropriate program label:
-
-- **`ECSOC2026`** for ECSOC contributions.
-- **`ELUSOC2026`** for ELUSOC contributions.
-
----
-
-# Merge Conflict Resolution
-
-If your branch becomes outdated:
-
-### ECSOC
-
-```bash
-git checkout main
-git pull origin main
-```
-
-### ELUSOC
-
-```bash
-git checkout main
-git pull origin main
-```
-
-Resolve conflicts locally, test your changes again, and push the updated branch.
-
----
-
-# Getting Started
-
-Please refer to **README.md** for installation instructions and project setup.
-
----
-
-# Need Help?
-
-If you have any questions:
-
-- Open a GitHub Discussion.
-- Ask your question in the issue comments.
-- Reach out to the project admins.
-
-We're happy to help!
-
----
-
-Thank you for contributing to **Box Office Inc - Movie Studio Simulator** and being part of **ECSOC 2026** and **ELUSOC 2026**.
-
-Happy Coding! 🚀
+Thank you for contributing to Box Office Inc - Movie Studio Simulator.
