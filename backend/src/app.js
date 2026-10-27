@@ -53,7 +53,6 @@ import facilityRoutes from "./routes/facilityRoutes.js";
 import agencyRoutes from "./routes/agencyRoutes.js";
 import crisisRoutes from "./routes/crisisRoutes.js";
 import merchandiseRoutes from "./routes/merchandiseRoutes.js";
-import awardsRoutes from "./routes/awardsRoutes.js";
 import syndicationRoutes from "./routes/syndicationRoutes.js";
 import festivalRoutes from "./routes/festivalRoutes.js";
 import progressionRoutes from "./routes/progressionRoutes.js";
@@ -61,6 +60,11 @@ import seederRoutes from "./routes/seederRoutes.js";
 import relationshipRoutes from "./routes/relationshipRoutes.js";
 import cinemaMarketRoutes from "./routes/cinemaMarketRoutes.js";
 import socialMediaRoutes from "./routes/socialMediaRoutes.js";
+import tutorialRoutes from "./routes/tutorialRoutes.js";
+import composerRoutes from "./routes/composerRoutes.js";
+import scandalRoutes from "./routes/scandalRoutes.js";
+import awardsRoutes from "./routes/awardsRoutes.js";
+import boxOfficeRoutes from "./routes/boxOfficeRoutes.js";
 import merchandiseEconomyRoutes from "./routes/merchandiseEconomyRoutes.js";
 
 const app = express();
@@ -169,6 +173,11 @@ app.use("/api/cinema-markets", apiRateLimiter, cinemaMarketRoutes);
 app.use("/api/social", apiRateLimiter, socialMediaRoutes);
 app.use("/api/merchandise-economy", apiRateLimiter, merchandiseEconomyRoutes);
 app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
+app.use("/api/tutorial", apiRateLimiter, tutorialRoutes);
+app.use("/api/composers", apiRateLimiter, composerRoutes);
+app.use("/api/scandals", apiRateLimiter, scandalRoutes);
+app.use("/api/awards", apiRateLimiter, awardsRoutes);
+app.use("/api/box-office", apiRateLimiter, boxOfficeRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
