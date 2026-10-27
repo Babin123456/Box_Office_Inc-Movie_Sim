@@ -1,87 +1,62 @@
-## 📄 Description
+## Summary
 
-Provide a clear and concise summary of your changes.
+Describe the problem and the change made. Keep this pull request focused on one issue.
 
-**Related Issue:** Closes #
+**Related issue:** Closes #
 
----
+## Program
 
-## 🚀 Open Source Program
-
+- [ ] NSoC Winter Edition 2026
 - [ ] ECSOC 2026
 - [ ] ELUSOC 2026
-- [ ] General Contribution
+- [ ] General contribution
 
----
+Follow the selected program's current instructions. Do not add program labels unless the maintainers or organizers require them.
 
-## 🛠 Type of Change
+## Type of change
 
-- [ ] Bug Fix
-- [ ] New Feature
+- [ ] Bug fix
+- [ ] Feature
 - [ ] Documentation
 - [ ] Refactoring
-- [ ] Performance Improvement
-- [ ] UI/UX Improvement
-- [ ] Breaking Change
+- [ ] Performance
+- [ ] UI/UX
+- [ ] Tests
+- [ ] Breaking change
 
----
+## Implementation details
 
-## 📸 Screenshots (If Applicable)
+What changed, and why is this approach appropriate?
 
-Attach screenshots or screen recordings for UI-related changes.
+## Testing
 
----
+List the exact commands/checks you ran and their results. Do not mark checks as passing unless you ran them.
 
-## 🧪 Testing
+- [ ] Relevant tests run
+- [ ] Build/lint checks run where available
+- [ ] Existing behavior checked
+- [ ] No secrets or local environment files included
 
-Describe how you tested your changes.
+**Commands and results:**
 
-- [ ] Tested locally
-- [ ] Existing functionality verified
-- [ ] No console errors
-- [ ] Build passes successfully
-
-Additional notes:
-
-```
-Describe your testing here...
+```text
+Add commands and results here.
 ```
 
----
+## Screenshots (if applicable)
 
-## 🌿 Target Branch
+Attach before/after screenshots or a short recording for UI changes.
 
-- [ ] `ecsoc`
-- [ ] `elusoc`
+## Reviewer notes
 
-> **⚠️ Important:** Pull Requests opened against the `main` branch are automatically closed by repository automation. Please ensure your PR targets either the `ecsoc` or `elusoc` branch.
+Mention migrations, environment-variable changes, limitations, or anything reviewers should pay special attention to.
 
----
+## Checklist
 
-## 🏷 Labels
-
-If applicable, request the appropriate labels.
-
-### ECSOC
-
-- [ ] `ECSOC2026`
-- [ ] `ECSoC26`
-
-### ELUSOC
-
-- [ ] `ELUSOC2026`
-
----
-
-## ✅ Checklist
-
-- [ ] I have requested assignment before starting work.
-- [ ] My Pull Request targets the correct branch (`ecsoc` or `elusoc`).
-- [ ] I have linked the related issue.
-- [ ] My code follows the project's coding standards.
-- [ ] I have performed a self-review of my code.
-- [ ] I have tested my changes locally.
-- [ ] My changes introduce no new warnings or errors.
-- [ ] I have updated documentation where necessary.
-- [ ] I have added screenshots for UI changes (if applicable).
-- [ ] If this is an ECSOC contribution, I have requested the `ECSoC26` label before merge.
+- [ ] I reviewed my own changes.
+- [ ] I searched for duplicate issues/PRs.
+- [ ] I requested assignment or maintainer approval when required.
+- [ ] I linked the relevant issue or explained why one is not needed.
+- [ ] I updated documentation/tests where appropriate.
+- [ ] I followed the target branch instructions confirmed by the maintainers.
+- [ ] I addressed program-specific requirements that apply to this contribution.
