@@ -62,6 +62,7 @@ import relationshipRoutes from "./routes/relationshipRoutes.js";
 import cinemaMarketRoutes from "./routes/cinemaMarketRoutes.js";
 import socialMediaRoutes from "./routes/socialMediaRoutes.js";
 import merchandiseEconomyRoutes from "./routes/merchandiseEconomyRoutes.js";
+import tutorialRoutes from "./routes/tutorialRoutes.js";
 
 const app = express();
 app.set("trust proxy", true);
@@ -169,6 +170,7 @@ app.use("/api/cinema-markets", apiRateLimiter, cinemaMarketRoutes);
 app.use("/api/social", apiRateLimiter, socialMediaRoutes);
 app.use("/api/merchandise-economy", apiRateLimiter, merchandiseEconomyRoutes);
 app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
+app.use("/api/tutorial", apiRateLimiter, tutorialRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
