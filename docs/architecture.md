@@ -17,6 +17,11 @@ The frontend uses a modern feature-based structure:
 - **Redux Toolkit:** Centralized state management using slices.
 - **Pages/Components:** UI layout and reusable elements.
 - **API (Axios):** Centralized HTTP client with interceptors for token management.
+- **Navigation & Department Layout:** Structured via `navigationConfig.js` into four studio operational departments:
+  - *Studio HQ & Executive:* Financial ledgers, records, facilities, upgrades.
+  - *Film & Cinema Division:* Production queue, release pipeline, telemetry, comparison.
+  - *Talent & Creative Guilds:* Actors, directors, writers, composers, crew, union relations.
+  - *Media, Distribution & PR:* TV syndication, streaming bidding, celebrity scandals, PR crisis.
 
 ## Simulation Engine
 The heart of CineVerse is the `runWeeklySimulation.js` service. It executes a pipeline of 'engines' that process the world state:

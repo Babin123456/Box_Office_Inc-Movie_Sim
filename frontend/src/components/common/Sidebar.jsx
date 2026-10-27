@@ -1,237 +1,51 @@
-import {
-  LayoutDashboard,
-  Film,
-  Users,
-  Building2,
-  TrendingUp,
-  FileBarChart,
-  FileText,
-  Pen,
-  Bell,
-  ShieldCheck,
-  Settings,
-  Layers,
-  Scale,
-  IndianRupee,
-  X,
-  Newspaper,
-  Swords,
-  Trophy,
-  Heart,
-  AlertTriangle,
-  Tv,
-  Share2,
-  Globe,
-} from "lucide-react";
-
+import React, { useState, useMemo, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { X, Search } from "lucide-react";
+
+import { NAVIGATION_DEPARTMENTS } from "../../config/navigationConfig";
+import SidebarCategory from "./SidebarCategory";
+import SidebarNavItem from "./SidebarNavItem";
 import ThemeToggle from "./ThemeToggle";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openCategories, setOpenCategories] = useState(() => {
+    // Open all categories by default for immediate discoverability
+    return NAVIGATION_DEPARTMENTS.reduce((acc, dept) => {
+      acc[dept.id] = true;
+      return acc;
+    }, {});
+  });
 
-  const menuItems = [
-    {
-      name: "Dashboard",
-      path: "/",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Industry News",
-      path: "/news",
-      icon: Newspaper,
-    },
-    {
-      name: "Rival Studios",
-      path: "/rivals",
-      icon: Swords,
-    },
-    {
-      name: "Leaderboard",
-      path: "/leaderboard",
-      icon: Trophy,
-    },
-    {
-      name: "Historic Records",
-      path: "/records",
-      icon: Trophy,
-    },
-    {
-      name: "Movies",
-      path: "/movies",
-      icon: Film,
-    },
-    {
-      name: "Ready for Release",
-      path: "/movies/ready",
-      icon: Film,
-    },
-    {
-      name: "Library",
-      path: "/movies/library",
-      icon: Film,
-    },
-    {
-      name: "Box Office Telemetry",
-      path: "/movies/telemetry",
-      icon: Globe,
-    },
-    {
-      name: "Cinema Markets",
-      path: "/movies/cinema-markets",
-      icon: Globe,
-    },
-    {
-      name: "Production Queue",
-      path: "/movies/queue",
-      icon: Layers,
-    },
-    {
-      name: "TV Production",
-      path: "/tv-shows",
-      icon: Layers,
-    },
-    {
-      name: "Comparison",
-      path: "/movies/comparison",
-      icon: Scale,
-    },
-    {
-      name: "Scripts",
-      path: "/scripts",
-      icon: Film,
-    },
-    {
-      name: "Writers",
-      path: "/writers",
-      icon: Pen,
-    },
-    {
-      name: "Directors",
-      path: "/directors",
-      icon: Users,
-    },
-    {
-      name: "Actors",
-      path: "/actors",
-      icon: Users,
-    },
-    {
-      name: "Talent Contracts",
-      path: "/talent/contracts",
-      icon: FileText,
-    },
-    {
-      name: "Talent Relationships",
-      path: "/talent/relationships",
-      icon: Heart,
-    },
-    {
-      name: "Crew Market",
-      path: "/crew",
-      icon: Users,
-    },
-    {
-      name: "Owned Crew",
-      path: "/crew/owned",
-      icon: Building2,
-    },
-    {
-      name: "Notifications",
-      path: "/notifications",
-      icon: Bell,
-    },
-    {
-      name: "Talent Academy",
-      path: "/talent/academy",
-      icon: Users,
-    },
-    {
-      name: "Studio Stats",
-      path: "/studio/stats",
-      icon: Building2,
-    },
-    {
-      name: "Financials",
-      path: "/studio/history",
-      icon: IndianRupee,
-    },
-    {
-      name: "Fan Club & Con",
-      path: "/studio/fanclub",
-      icon: Heart,
-    },
-    {
-      name: "Social Media",
-      path: "/marketing/social",
-      icon: Share2,
-    },
-    {
-      name: "Merchandising",
-      path: "/studio/merchandise",
-      icon: TrendingUp,
-    },
-    {
-      name: "Awards History",
-      path: "/studio/awards",
-      icon: Trophy,
-    },
-    {
-      name: "Studio Upgrades",
-      path: "/studio/upgrades",
-      icon: Building2,
-    },
-    {
-      name: "Crew Union",
-      path: "/studio/union",
-      icon: Scale,
-    },
-    {
-      name: "PR Crisis Center",
-      path: "/studio/crisis",
-      icon: AlertTriangle,
-    },
-    {
-      name: "Studio Facilities",
-      path: "/studio/facilities",
-      icon: Building2,
-    },
-    {
-      name: "TV Syndication",
-      path: "/studio/syndication",
-      icon: Tv,
-    },
-    {
-      name: "Film Festivals",
-      path: "/studio/festivals",
-      icon: Trophy,
-    },
-    {
-      name: "Franchises",
-      path: "/studio/franchises",
-      icon: Layers,
-    },
-    {
-      name: "Market",
-      path: "/market",
-      icon: TrendingUp,
-    },
-    {
-      name: "Reports",
-      path: "/reports",
-      icon: FileBarChart,
-    },
-    {
-      name: "Auth Monitor",
-      path: "/auth-monitoring",
-      icon: ShieldCheck,
-    },
-    {
-      name: "Settings",
-      path: "/settings",
-      icon: Settings,
-    },
-  ];
+  // Ensure current active category is always open on route change
+  useEffect(() => {
+    const activeDept = NAVIGATION_DEPARTMENTS.find((dept) =>
+      dept.items.some((item) => item.path === location.pathname)
+    );
+    if (activeDept) {
+      setOpenCategories((prev) => ({ ...prev, [activeDept.id]: true }));
+    }
+  }, [location.pathname]);
+
+  const toggleCategory = (id) => {
+    setOpenCategories((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Filtered items when searching
+  const filteredDepartments = useMemo(() => {
+    if (!searchQuery.trim()) return NAVIGATION_DEPARTMENTS;
+    const query = searchQuery.toLowerCase().trim();
+
+    return NAVIGATION_DEPARTMENTS.map((dept) => ({
+      ...dept,
+      items: dept.items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(query) ||
+          dept.title.toLowerCase().includes(query)
+      ),
+    })).filter((dept) => dept.items.length > 0);
+  }, [searchQuery]);
 
   return (
     <>
@@ -245,56 +59,113 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-72 bg-[#0B1020] border-r border-slate-800 p-6 flex flex-col
+          fixed inset-y-0 left-0 z-50 w-72 flex flex-col
           transition-transform duration-300 ease-in-out
           md:static md:translate-x-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
+        style={{
+          backgroundColor: "var(--surface)",
+          borderRight: "1px solid var(--border)",
+        }}
       >
-        <div className="flex justify-between items-center mb-10 shrink-0">
-          <h1 className="text-3xl font-bold text-violet-500">CineVerse</h1>
+        {/* Header Branding */}
+        <div className="flex justify-between items-center p-5 border-b border-slate-800/80 shrink-0">
+          <Link
+            to="/"
+            onClick={onClose}
+            className="flex items-center gap-2 group cursor-pointer"
+          >
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white font-black text-lg shadow-md shadow-violet-500/20">
+              C
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-violet-500 group-hover:text-violet-400 transition-colors">
+                CineVerse
+              </h1>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
+                Studio Management
+              </p>
+            </div>
+          </Link>
           <button
             onClick={onClose}
-            className="md:hidden text-slate-400 hover:text-white p-1 cursor-pointer"
+            className="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 cursor-pointer transition-colors"
+            aria-label="Close navigation"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
-        <nav className="space-y-2 overflow-y-auto pr-1 flex-1 scrollbar-thin">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-
-            const active = location.pathname === item.path;
-
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={onClose}
-                className={`
-                  flex
-                  items-center
-                  gap-3
-                  p-3
-                  rounded-xl
-                  transition-all
-                  duration-200
-                  ${
-                    active
-                      ? "bg-violet-600 text-white"
-                      : "text-slate-300 hover:bg-slate-800"
-                  }
-                `}
+        {/* Quick Search */}
+        <div className="p-3 border-b border-slate-800/60 shrink-0">
+          <div className="relative">
+            <Search
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search departments & tools..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-900/60 border border-slate-800 text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-violet-500 transition-colors"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs"
               >
-                <Icon size={20} />
+                ×
+              </button>
+            )}
+          </div>
+        </div>
 
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
+        {/* Categorized Navigation List */}
+        <nav className="p-3 overflow-y-auto flex-1 scrollbar-thin space-y-1">
+          {filteredDepartments.length === 0 ? (
+            <div className="p-4 text-center text-xs text-slate-500">
+              No matching tools or departments found.
+            </div>
+          ) : (
+            filteredDepartments.map((dept) =>
+              searchQuery.trim() ? (
+                // When actively searching, flatten the view for direct click access
+                <div key={dept.id} className="mb-3">
+                  <div className="text-[10px] uppercase font-bold text-slate-500 px-3 py-1">
+                    {dept.title}
+                  </div>
+                  {dept.items.map((item) => (
+                    <SidebarNavItem
+                      key={item.path}
+                      item={item}
+                      isActive={location.pathname === item.path}
+                      onClick={onClose}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <SidebarCategory
+                  key={dept.id}
+                  department={dept}
+                  isOpen={Boolean(openCategories[dept.id])}
+                  onToggle={() => toggleCategory(dept.id)}
+                  currentPath={location.pathname}
+                  onItemClick={onClose}
+                />
+              )
+            )
+          )}
         </nav>
-        <div className="mt-auto pt-4 border-t" style={{ borderColor: "var(--border)" }}>
+
+        {/* Footer with ThemeToggle */}
+        <div
+          className="p-3 border-t shrink-0 flex items-center justify-between"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <span className="text-[11px] text-slate-400 font-medium">Theme Mode</span>
           <ThemeToggle />
         </div>
       </aside>
