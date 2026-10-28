@@ -168,7 +168,7 @@ app.use("/api/relationships", apiRateLimiter, relationshipRoutes);
 app.use("/api/cinema-markets", apiRateLimiter, cinemaMarketRoutes);
 app.use("/api/social", apiRateLimiter, socialMediaRoutes);
 app.use("/api/merchandise-economy", apiRateLimiter, merchandiseEconomyRoutes);
-// app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
+app.use("/api/talent-agencies", apiRateLimiter, agencyRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

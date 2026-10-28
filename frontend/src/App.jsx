@@ -73,6 +73,7 @@ import FacilityManager from "./pages/studio/FacilityManager";
 import SyndicationManager from "./pages/studio/SyndicationManager";
 import FestivalCircuit from "./pages/studio/FestivalCircuit";
 import StudioHQ from "./pages/studio/StudioHQ";
+import AgencyPackagingHub from "./pages/talent/AgencyPackagingHub";
 import { TutorialProvider } from "./context/TutorialContext";
 import TutorialGuideOverlay from "./components/tutorial/TutorialGuideOverlay";
 
@@ -534,6 +535,14 @@ function App() {
           element={
             <ProtectedRoute>
               <FacilityManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/talent/agencies"
+          element={
+            <ProtectedRoute>
+              <AgencyPackagingHub />
             </ProtectedRoute>
           }
         />
