@@ -1,11 +1,8 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
-  - name: ECSOC 2026 Program
+  - name: NSoC Winter Edition
+    url: https://www.nsoc.in/
+    about: Review current official NSoC program information and participation guidance.
+  - name: Project discussions
     url: https://github.com/SRV30/Box_Office_Inc-Movie_Sim/discussions
-    about: Questions about ECSOC 2026 contribution guidelines
-  - name: ELUSOC 2026 Program
-    url: https://github.com/SRV30/Box_Office_Inc-Movie_Sim/discussions
-    about: Questions about ELUSOC 2026 contribution guidelines
-  - name: Game Discussion
-    url: https://github.com/SRV30/Box_Office_Inc-Movie_Sim/discussions
-    about: Ask questions and discuss game features
+    about: Ask project questions or discuss proposed changes.
