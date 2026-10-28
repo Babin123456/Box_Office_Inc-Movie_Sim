@@ -2,10 +2,11 @@ import FestivalSubmission from "../models/FestivalSubmission.js";
 import Movie from "../models/Movie.js";
 import Studio from "../models/Studio.js";
 import { deliberateFestivalJury, generateDistributorOffers } from "../services/festival/festivalJuryEngine.js";
+import { withTransaction } from "../utils/financeTransactionHelper.js";
 
 /**
  * POST /api/festivals/submit
- * Submits a movie to a prestige film festival circuit with comprehensive jury deliberation.
+ * Submits a movie to a prestige film festival circuit with atomic fee deduction and jury deliberation.
  */
 export const submitToFestival = async (req, res, next) => {
   try {
@@ -19,52 +20,67 @@ export const submitToFestival = async (req, res, next) => {
     const entryFees = { CANNES: 500000, SUNDANCE: 250000, VENICE: 400000, TIFF: 300000 };
     const fee = entryFees[festivalName] || 250000;
 
-    // Deduct entry fee from studio if available
-    const studio = await Studio.findOne({ owner: req.user._id });
-    if (studio) {
-      if (studio.money < fee) {
-        return res.status(400).json({
-          success: false,
-          message: `Insufficient studio funds for festival entry fee (Requires ₹${fee.toLocaleString()})`,
-        });
-      }
-      studio.money -= fee;
-      await studio.save();
-    }
-
-    // Execute jury deliberation panel simulation
+    // Execute jury deliberation simulation and market bids
     const deliberation = deliberateFestivalJury(movie, festivalName);
     const distributionBids = generateDistributorOffers(deliberation.juryScore, movie.budget);
     const topOffer = distributionBids[0]?.advancePayment || 0;
 
-    const submission = await FestivalSubmission.create({
-      userId: req.user._id,
-      movieId,
-      festivalName,
-      entryFee: fee,
-      juryScore: deliberation.juryScore,
-      awardWon: deliberation.awardWon,
-      status: deliberation.status,
-      criticHypeBoost: deliberation.criticHypeBoost,
-      marketDistributionOffer: topOffer,
-      juryDeliberation: {
-        standingOvationMinutes: deliberation.standingOvationMinutes,
-        consensusQuote: deliberation.consensusQuote,
-        pillarScores: deliberation.pillarScores,
-      },
-      distributionBids,
-    });
+    // Atomically verify studio existence, deduct entry fee, and persist festival submission
+    const submission = await withTransaction(async (session) => {
+      const studio = await Studio.findOne({ owner: req.user._id }).session(session);
+      if (!studio) {
+        const error = new Error("Studio profile not found. Please establish your studio first.");
+        error.status = 404;
+        throw error;
+      }
 
-    if (deliberation.awardWon !== "NONE" && studio) {
-      studio.prestige = (studio.prestige || 0) + 15;
-      await studio.save();
-    }
+      if (studio.money < fee) {
+        const error = new Error(`Insufficient studio funds for festival entry fee (Requires ₹${fee.toLocaleString()})`);
+        error.status = 400;
+        throw error;
+      }
+
+      studio.money -= fee;
+
+      if (deliberation.awardWon !== "NONE") {
+        studio.prestige = (studio.prestige || 0) + 15;
+      }
+      await studio.save({ session });
+
+      const [createdSubmission] = await FestivalSubmission.create(
+        [
+          {
+            userId: req.user._id,
+            movieId,
+            festivalName,
+            entryFee: fee,
+            juryScore: deliberation.juryScore,
+            awardWon: deliberation.awardWon,
+            status: deliberation.status,
+            criticHypeBoost: deliberation.criticHypeBoost,
+            marketDistributionOffer: topOffer,
+            juryDeliberation: {
+              standingOvationMinutes: deliberation.standingOvationMinutes,
+              consensusQuote: deliberation.consensusQuote,
+              pillarScores: deliberation.pillarScores,
+            },
+            distributionBids,
+          },
+        ],
+        { session }
+      );
+
+      return createdSubmission;
+    });
 
     return res.status(201).json({
       success: true,
       data: submission,
     });
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
     next(error);
   }
 };
@@ -116,51 +132,72 @@ export const withdrawSubmission = async (req, res, next) => {
 
 /**
  * POST /api/festivals/accept-distribution
- * Accepts a competitive distributor acquisition contract, crediting studio funds.
+ * Accepts a competitive distributor acquisition contract, crediting studio funds atomically.
  */
 export const acceptDistributionDeal = async (req, res, next) => {
   try {
     const { submissionId, distributorName } = req.body;
 
-    const submission = await FestivalSubmission.findOne({ _id: submissionId, userId: req.user._id });
-    if (!submission) {
-      return res.status(404).json({ success: false, message: "Festival submission not found" });
-    }
+    const result = await withTransaction(async (session) => {
+      const studio = await Studio.findOne({ owner: req.user._id }).session(session);
+      if (!studio) {
+        const error = new Error("Studio profile not found. Please establish your studio first.");
+        error.status = 404;
+        throw error;
+      }
 
-    if (submission.status === "ACQUIRED") {
-      return res.status(400).json({ success: false, message: "A distribution contract has already been signed for this submission" });
-    }
+      const submission = await FestivalSubmission.findOne({ _id: submissionId, userId: req.user._id }).session(session);
+      if (!submission) {
+        const error = new Error("Festival submission not found");
+        error.status = 404;
+        throw error;
+      }
 
-    const selectedBid = submission.distributionBids.find((b) => b.distributorName === distributorName);
-    if (!selectedBid) {
-      return res.status(404).json({ success: false, message: "Selected distributor bid not found" });
-    }
+      if (submission.status === "ACQUIRED") {
+        const error = new Error("A distribution contract has already been signed for this submission");
+        error.status = 400;
+        throw error;
+      }
 
-    submission.status = "ACQUIRED";
-    submission.acceptedDeal = {
-      distributorName: selectedBid.distributorName,
-      advancePayment: selectedBid.advancePayment,
-      boxOfficeRoyaltyCut: selectedBid.boxOfficeRoyaltyCut,
-      signedAt: new Date(),
-    };
-    await submission.save();
+      const selectedBid = submission.distributionBids.find((b) => b.distributorName === distributorName);
+      if (!selectedBid) {
+        const error = new Error("Selected distributor bid not found");
+        error.status = 404;
+        throw error;
+      }
 
-    const studio = await Studio.findOne({ owner: req.user._id });
-    if (studio) {
+      submission.status = "ACQUIRED";
+      submission.acceptedDeal = {
+        distributorName: selectedBid.distributorName,
+        advancePayment: selectedBid.advancePayment,
+        boxOfficeRoyaltyCut: selectedBid.boxOfficeRoyaltyCut,
+        signedAt: new Date(),
+      };
+      await submission.save({ session });
+
       studio.money = (studio.money || 0) + selectedBid.advancePayment;
       studio.prestige = (studio.prestige || 0) + 10;
-      await studio.save();
-    }
+      await studio.save({ session });
+
+      return {
+        submission,
+        studioFunds: studio.money,
+        selectedBid,
+      };
+    });
 
     return res.status(200).json({
       success: true,
-      message: `Successfully inked distribution deal with ${selectedBid.distributorName}! Advance of ₹${selectedBid.advancePayment.toLocaleString()} credited to studio treasury.`,
+      message: `Successfully inked distribution deal with ${result.selectedBid.distributorName}! Advance of ₹${result.selectedBid.advancePayment.toLocaleString()} credited to studio treasury.`,
       data: {
-        submission,
-        studioFunds: studio?.money,
+        submission: result.submission,
+        studioFunds: result.studioFunds,
       },
     });
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
     next(error);
   }
 };
