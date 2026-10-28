@@ -11,7 +11,7 @@ Describe the problem and the change made. Keep this pull request focused on one 
 - [ ] ELUSOC 2026
 - [ ] General contribution
 
-Follow the selected program's current instructions. Do not add program labels unless the maintainers or organizers require them.
+For NSoC-focused work, link the issue using the repository's `[NSoC_2026]` issue convention. This is a repository convention, not a claim that NSoC mandates this exact label or format. Follow current official program guidance for any required tracking steps.
 
 ## Type of change
 
