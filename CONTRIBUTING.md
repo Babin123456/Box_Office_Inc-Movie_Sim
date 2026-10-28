@@ -9,7 +9,7 @@ This repository participates in ECSOC 2026 and ELUSOC 2026 and has been selected
 - **NSoC Project Admin / Project Kernel:** Sahil Raj Verma
 - **NSoC website:** https://www.nsoc.in/
 
-NSoC describes a 45-day program focused on meaningful issues, reviewed pull requests, and production-useful contributions. This repository uses the `[NSoC_2026]` prefix on NSoC-focused issue titles to make those tasks easy to identify; this is a project convention, not a claim that the program mandates that exact format. Follow the current [official NSoC guidance](https://www.nsoc.in/) for registration, eligibility, review, and contribution tracking. Do not promise points or recognition for a contribution; the organizers determine what qualifies.
+NSoC describes a 45-day program focused on meaningful issues, reviewed pull requests, and production-useful contributions. For NSoC work in this repository, add the `nsoc26` label to the issue and pull request, and apply exactly one task-level label: `level1`, `level2`, or `level3`. The `[NSoC_2026]` issue-title prefix may be used to make NSoC tasks easy to identify, but it does not replace the required labels. Follow the current [official NSoC guidance](https://www.nsoc.in/) for registration, eligibility, review, and contribution tracking. Do not promise points or recognition for a contribution; the organizers determine what qualifies.
 
 ## Contribution workflow
 
@@ -73,7 +73,7 @@ Request review from the project maintainers and respond constructively to feedba
 - Choose a meaningful, actionable issue that matches your skills and discuss unclear scope with the Project Kernel before implementation.
 - Prefer one issue per pull request. Explain the problem, the change, and the evidence that it works.
 - Avoid duplicate, spam, placeholder, or low-effort contributions intended only to increase activity.
-- Keep the `[NSoC_2026]` prefix on issues designated for NSoC in this repository. It is a local project convention; check the official program guidance for any required labels or tracking steps.
+- Add the `nsoc26` label to each NSoC issue and pull request, and use exactly one of `level1`, `level2`, or `level3` to reflect task complexity. Keep the `[NSoC_2026]` issue-title prefix when used by the project; it does not replace labels.
 - Submit a focused pull request and respond to review feedback. A pull request is not considered shipped merely because it was opened; maintainers review it and decide whether to merge.
 - Follow the current official NSoC guidance for registration, eligibility, review, deadlines, and contribution tracking. Do not promise points or recognition; the organizers determine what qualifies.
 
@@ -114,7 +114,10 @@ Request review from the project maintainers and respond constructively to feedba
 - [ ] The change is focused and follows the existing project structure.
 - [ ] Relevant tests/build/lint checks were run, and results are reported accurately.
 - [ ] Documentation and environment examples are updated when needed.
-- [ ] No secrets or local environment files are included.
+- [ ] No secrets or local environment files are included, and `.gitignore` correctly excludes local-only files, dependencies, and build artifacts.
+- [ ] For NSoC contributions, the issue and PR have `nsoc26`, and the PR has exactly one correct level label (`level1`, `level2`, or `level3`).
+- [ ] The PR is assigned to a contributor and linked to a valid, relevant issue.
+- [ ] The PR has been reviewed by a maintainer before merging.
 - [ ] Screenshots are included for meaningful UI changes.
 - [ ] Program-specific requirements have been followed where applicable.
 
