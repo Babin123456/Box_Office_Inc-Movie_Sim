@@ -6,6 +6,7 @@ A full-stack **movie studio management and entertainment-industry simulation gam
 ![Open Source](https://img.shields.io/badge/Open%20Source-Welcome-brightgreen)
 ![ECSOC](https://img.shields.io/badge/ECSOC-2026-blue)
 ![ELUSOC](https://img.shields.io/badge/ELUSOC-2026-orange)
+![Nexus Spring of Code](https://img.shields.io/badge/NSoC-2026-blue)
 
 ---
 
@@ -20,6 +21,30 @@ This repository participates in **ECSOC 2026** and **ELUSOC 2026**. The project 
 - **Project repository:** [GitHub](https://github.com/SRV30/Box_Office_Inc-Movie_Sim)
 
 NSoC is a 45-day open-source program centered on meaningful issues, reviewed pull requests, and contributions that ship useful improvements. Contributors should start from a clear issue, discuss substantial changes with the project maintainer, and submit a focused pull request for review. Duplicate, spam, and low-effort changes are not welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and follow the current [official NSoC guidance](https://www.nsoc.in/) for participation and contribution tracking. A merged contribution is not guaranteed to qualify for program recognition; eligibility and scoring are determined by the organizers.
+
+### Mandatory NSoC labels and merge requirements
+
+Create and use these four repository labels for NSoC contributions:
+
+- `nsoc26` — required on every NSoC issue and pull request.
+- `level1` — use for a Level 1 task.
+- `level2` — use for a Level 2 task.
+- `level3` — use for a Level 3 task.
+
+Every NSoC pull request must carry `nsoc26` and **exactly one** appropriate level label (`level1`, `level2`, or `level3`). Label the related issue consistently. The labels help organize project work; follow any additional instructions published by the NSoC organizers.
+
+**Merge a pull request only when every requirement below is satisfied:**
+
+- [ ] The PR is assigned to a contributor and linked to a valid, relevant issue.
+- [ ] It contains meaningful code or documentation changes—not a zero-line change or a trivial edit made only to claim participation.
+- [ ] The implementation works, and the code is clean, understandable, and consistent with the project.
+- [ ] Documentation is added or updated wherever needed.
+- [ ] The PR has the `nsoc26` label and the correct single level label.
+- [ ] The PR has been properly reviewed and approved by a maintainer.
+- [ ] The `.gitignore` file is used correctly: do not commit secrets, local environment files, dependencies, build output, or other generated/local-only files.
+- [ ] Relevant tests, lint checks, and build checks have been run; results are reported honestly in the PR.
+
+Do not merge a PR if any requirement is missing. Ask the contributor to address the gap first. These are repository review requirements and do not guarantee NSoC points or official recognition.
 
 ---
 
@@ -182,7 +207,7 @@ We welcome focused contributions that improve gameplay, reliability, accessibili
 4. Keep changes scoped to the issue and add or update tests where appropriate.
 5. Open a pull request that explains the problem, solution, testing, and any user-visible changes.
 
-For ECSOC/ELUSOC-specific contribution labels, follow the instructions in [CONTRIBUTING.md](CONTRIBUTING.md). For NSoC, follow the current official program guidance and any instructions from the organizers; do not assume a program-specific label unless it has been specified.
+For NSoC issues and pull requests, apply `nsoc26` and exactly one of `level1`, `level2`, or `level3`, as described above. For ECSOC/ELUSOC-specific contribution labels, follow the instructions in [CONTRIBUTING.md](CONTRIBUTING.md). Always follow the current official program guidance and any additional instructions from the organizers.
 
 ## Roadmap
 
