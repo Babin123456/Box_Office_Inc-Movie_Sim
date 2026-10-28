@@ -19,7 +19,7 @@ This repository participates in **ECSOC 2026** and **ELUSOC 2026**. The project 
 - **Program website:** [NSoC](https://www.nsoc.in/)
 - **Project repository:** [GitHub](https://github.com/SRV30/Box_Office_Inc-Movie_Sim)
 
-Contributors should follow the workflow in [CONTRIBUTING.md](CONTRIBUTING.md), work on meaningful project issues, and submit focused pull requests for review. Follow any additional instructions published by NSoC organizers.
+NSoC is a 45-day open-source program centered on meaningful issues, reviewed pull requests, and contributions that ship useful improvements. Contributors should start from a clear issue, discuss substantial changes with the project maintainer, and submit a focused pull request for review. Duplicate, spam, and low-effort changes are not welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and follow the current [official NSoC guidance](https://www.nsoc.in/) for participation and contribution tracking. A merged contribution is not guaranteed to qualify for program recognition; eligibility and scoring are determined by the organizers.
 
 ---
 
