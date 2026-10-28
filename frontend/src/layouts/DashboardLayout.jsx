@@ -77,9 +77,11 @@ const DashboardLayout = ({ children }) => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2 cursor-pointer md:hidden"
+              className="p-2 cursor-pointer md:hidden rounded-lg hover:bg-slate-800/50 transition-colors"
               style={{ color: "var(--muted)" }}
               aria-label="Open sidebar"
+              aria-expanded={isSidebarOpen}
+              aria-controls="studio-sidebar"
             >
               <Menu size={24} />
             </button>
