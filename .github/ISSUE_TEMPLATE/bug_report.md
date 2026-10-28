@@ -1,67 +1,42 @@
 ---
-name: 🐛 Bug Report
-about: Report a bug to help improve Box Office Inc - Movie Studio Simulator.
+name: Bug report
+about: Report a reproducible defect in Box Office Inc
 title: "bug: "
 labels: bug
 assignees: ""
 ---
 
-# 🐛 Bug Description
+## Summary
+Describe the defect clearly and briefly.
 
-Provide a clear and concise description of the bug.
-
----
-
-# 🚀 Open Source Program
-
-- [ ] ECSOC 2026
-- [ ] ELUSOC 2026
-- [ ] General Issue
-
-> If this issue is for an open-source program, please add the corresponding label:
->
-> - `ECSOC2026`
-> - `ELUSOC2026`
-
----
-
-# 📍 Steps to Reproduce
-
+## Steps to reproduce
 1.
 2.
 3.
-4.
 
----
+## Expected behavior
+What should happen?
 
-# ✅ Expected Behavior
+## Actual behavior
+What happened instead?
 
-Describe what you expected to happen.
+## Environment
+- OS / browser:
+- Frontend or backend:
+- Node.js version (if relevant):
+- Branch or commit (if known):
 
----
+## Evidence
+Add screenshots or relevant logs. Remove access tokens, credentials, personal data, and other secrets.
 
-# ❌ Actual Behavior
+## Contribution program
+- [ ] NSoC Winter Edition 2026
+- [ ] ECSOC 2026
+- [ ] ELUSOC 2026
+- [ ] General contribution
 
-Describe what actually happened.
+For NSoC-focused issues, maintainers may use the `[NSoC_2026]` title prefix as a repository convention. Follow the current official program guidance for any required registration or tracking.
 
----
-
-# 📸 Screenshots / Screen Recording
-
-If applicable, attach screenshots or recordings to help explain the issue.
-
----
-
-# 💻 Environment
-
-- OS:
-- Browser:
-- Node.js Version:
-- Project Branch:
-- Commit Hash (optional):
-
----
-
-# 📋 Additional Context
-
-Add any additional information that may help us reproduce or resolve the issue.
+## Checklist
+- [ ] I searched for duplicate issues.
+- [ ] The issue is actionable and can be reproduced, or I explained when it occurs.
