@@ -20,13 +20,13 @@ const BoxOfficeAnalytics = ({ movieId }) => {
       try {
         setLoading(true);
         const [telemetryRes, clashRes] = await Promise.all([
-          axios.get(`/api/box-office/analytics/${movieId}`),
-          axios.get(`/api/box-office/clash-analytics/${movieId}`),
+          axios.get(`/box-office/analytics/${movieId}`),
+          axios.get(`/box-office/clash-analytics/${movieId}`),
         ]);
-        setTelemetry(telemetryRes.data.data);
-        setClashData(clashRes.data.data);
+        setTelemetry(telemetryRes.data?.data);
+        setClashData(clashRes.data?.data);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load box office telemetry");
+        setError(err.response?.data?.message || err.message || "Failed to load box office telemetry");
       } finally {
         setLoading(false);
       }
@@ -35,7 +35,32 @@ const BoxOfficeAnalytics = ({ movieId }) => {
   }, [movieId]);
 
   if (loading) return <div className="p-4 text-center text-slate-400">Loading box office analytics...</div>;
-  if (error) return <div className="p-4 text-center text-rose-500">{error}</div>;
+  if (error) {
+    return (
+      <div className="p-4 bg-rose-950/40 border border-rose-800 rounded-xl text-center space-y-2">
+        <p className="text-rose-400 text-sm">{error}</p>
+        <button
+          onClick={() => {
+            setError(null);
+            setLoading(true);
+            Promise.all([
+              axios.get(`/box-office/analytics/${movieId}`),
+              axios.get(`/box-office/clash-analytics/${movieId}`),
+            ])
+              .then(([tRes, cRes]) => {
+                setTelemetry(tRes.data?.data);
+                setClashData(cRes.data?.data);
+              })
+              .catch((e) => setError(e.response?.data?.message || e.message))
+              .finally(() => setLoading(false));
+          }}
+          className="text-xs px-3 py-1 bg-rose-800 hover:bg-rose-700 text-white rounded cursor-pointer transition-colors"
+        >
+          Retry Loading
+        </button>
+      </div>
+    );
+  }
   if (!telemetry) return null;
 
   const { regionalBreakdown, profitMargin, occupancyEfficiency } = telemetry;

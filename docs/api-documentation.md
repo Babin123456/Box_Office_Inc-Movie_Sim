@@ -30,6 +30,13 @@ Authorization: Bearer <your_jwt_token>
 
 ### Talent
 - `GET /actors`, `GET /writers`, `GET /directors`: Browse the talent market.
+- `GET /composers/market`: Browse composers and film score specialists.
 - `POST /talent/hire`: Hire a professional.
 
-For a full list of endpoints, see `backend/src/routes/`.
+### Studio Subsystems & Telemetry
+- `GET /tutorial/state`: Check interactive onboarding progression.
+- `GET /scandals/strategies`: Retrieve crisis response strategies.
+- `GET /box-office/analytics/:movieId`: View regional market telemetry and head-to-head clash stats.
+
+For a full reference of subsystem endpoints, see [Core Services & Subsystem API Reference](api/core-endpoints.md).
+For a full list of all endpoints, see `backend/src/routes/`.
