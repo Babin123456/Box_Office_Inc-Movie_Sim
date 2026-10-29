@@ -332,7 +332,10 @@ export const getReleasedMovies = async (req, res) => {
 
         const gameState = await GameState.findOne({ user: req.user._id }).lean();
 
-        const movies = await Movie.find({ studioId: studio._id, status: "RELEASED" })
+        const movies = await Movie.find({
+            studioId: studio._id,
+            status: { $in: ["RELEASED", "RELEASED_STREAMING"] },
+        })
             .sort({ createdAt: -1 })
             .lean();
 
