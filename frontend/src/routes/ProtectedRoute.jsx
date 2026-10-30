@@ -39,6 +39,13 @@ const ProtectedRoute = ({ children }) => {
         return;
       }
 
+      if (!localStorage.getItem("token")) {
+        dispatch(logout());
+        setSessionRejected(true);
+        setCheckingSession(false);
+        return;
+      }
+
       try {
         setCheckingSession(true);
         setSessionRecoveryError(false);

@@ -81,6 +81,9 @@ export const clearScheduledRefresh = () => {
 
 const scheduleRefreshRetry = () => {
   clearScheduledRefresh();
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
   refreshTimer = window.setTimeout(() => {
     refreshAuthSession().catch((error) => {
       if (isRefreshSessionRejected(error)) {
