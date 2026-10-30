@@ -8,6 +8,7 @@ const MovieLibrary = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("releaseWeekDesc");
+  const [releaseType, setReleaseType] = useState("all");
 
   const fetchReleasedMovies = useCallback(async () => {
     try {
@@ -26,7 +27,21 @@ const MovieLibrary = () => {
   }, [fetchReleasedMovies]);
 
   const filteredAndSortedMovies = useMemo(() => {
-    let result = movies.filter(m => m.title.toLowerCase().includes(search.toLowerCase()));
+    const normalizedSearch = search.toLowerCase();
+
+    let result = movies.filter((movie) => {
+      const titleMatches = (movie.title || "").toLowerCase().includes(normalizedSearch);
+
+      // Older records may not have releaseType populated.
+      const effectiveReleaseType =
+        movie.releaseType ||
+        (movie.status === "RELEASED_STREAMING" ? "STREAMING" : "THEATRICAL");
+
+      const releaseTypeMatches =
+        releaseType === "all" || effectiveReleaseType === releaseType;
+
+      return titleMatches && releaseTypeMatches;
+    });
 
     switch(sortBy) {
         case "boxOfficeDesc": result.sort((a, b) => b.worldwideGross - a.worldwideGross); break;
@@ -38,7 +53,7 @@ const MovieLibrary = () => {
     }
 
     return result;
-  }, [movies, search, sortBy]);
+  }, [movies, search, sortBy, releaseType]);
 
   const getVerdictColor = (verdict) => {
     switch(verdict) {
@@ -74,6 +89,16 @@ const MovieLibrary = () => {
                 />
             </div>
             <select
+                aria-label="Filter by release type"
+                value={releaseType}
+                onChange={(e) => setReleaseType(e.target.value)}
+                className="bg-[#111827] border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-600"
+            >
+                <option value="all">All Releases</option>
+                <option value="THEATRICAL">Theatrical</option>
+                <option value="STREAMING">Streaming</option>
+            </select>
+            <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-[#111827] border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-600"
@@ -90,7 +115,9 @@ const MovieLibrary = () => {
           <div className="text-white text-center py-10">Loading library...</div>
         ) : filteredAndSortedMovies.length === 0 ? (
           <div className="bg-[#111827] border border-slate-800 rounded-2xl p-12 text-center text-slate-400">
-            No movies in the library.
+            {movies.length === 0 && search.trim() === "" && releaseType === "all"
+              ? "No movies in the library."
+              : "No movies match your current search and filters."}
           </div>
         ) : (
           <div className="overflow-x-auto">

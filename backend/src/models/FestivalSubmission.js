@@ -32,12 +32,20 @@ const festivalSubmissionSchema = new mongoose.Schema(
     },
     awardWon: {
       type: String,
-      enum: ["PALME_D_OR", "GRAND_PRIX", "AUDIENCE_AWARD", "GOLDEN_LION", "NONE"],
+      enum: [
+        "PALME_D_OR",
+        "GRAND_PRIX",
+        "AUDIENCE_AWARD",
+        "GOLDEN_LION",
+        "PEOPLES_CHOICE",
+        "GRAND_JURY_PRIZE",
+        "NONE",
+      ],
       default: "NONE",
     },
     status: {
       type: String,
-      enum: ["SUBMITTED", "ACCEPTED", "AWARDED", "REJECTED", "WITHDRAWN"],
+      enum: ["SUBMITTED", "ACCEPTED", "AWARDED", "REJECTED", "WITHDRAWN", "ACQUIRED"],
       default: "SUBMITTED",
     },
     prestigeTier: {
@@ -52,6 +60,31 @@ const festivalSubmissionSchema = new mongoose.Schema(
     criticHypeBoost: {
       type: Number,
       default: 1.0,
+    },
+    juryDeliberation: {
+      standingOvationMinutes: { type: Number, default: 0 },
+      consensusQuote: { type: String, default: "" },
+      pillarScores: {
+        direction: { type: Number, default: 50 },
+        screenplay: { type: Number, default: 50 },
+        performances: { type: Number, default: 50 },
+        thematicResonance: { type: Number, default: 50 },
+      },
+    },
+    distributionBids: [
+      {
+        distributorName: { type: String, required: true },
+        advancePayment: { type: Number, required: true },
+        boxOfficeRoyaltyCut: { type: Number, default: 15 },
+        marketingCommitment: { type: Number, default: 500000 },
+        territory: { type: String, default: "Worldwide" },
+      },
+    ],
+    acceptedDeal: {
+      distributorName: { type: String },
+      advancePayment: { type: Number },
+      boxOfficeRoyaltyCut: { type: Number },
+      signedAt: { type: Date },
     },
   },
   {
