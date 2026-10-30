@@ -3,16 +3,37 @@ import axios from "axios";
 import { store } from "../app/store";
 import { logout, setCredentials } from "../features/auth/authSlice";
 
-const baseURL = import.meta.env.VITE_BACKEND_API_URL;
+const resolveBaseURL = () => {
+  const envUrl = import.meta.env.VITE_BACKEND_API_URL?.trim();
+  if (envUrl) {
+    const cleaned = envUrl.replace(/\/+$/, "");
+    return cleaned.endsWith("/api") ? cleaned : `${cleaned}/api`;
+  }
+  return "/api";
+};
+
+const baseURL = resolveBaseURL();
 const REFRESH_BUFFER_MS = 60 * 1000;
 const MIN_REFRESH_DELAY_MS = 5 * 1000;
 const REFRESH_RETRY_DELAY_MS = 30 * 1000;
 const MAX_RETRIES = 2;
 const RETRY_DELAY_BASE = 1000;
 
+const cleanDuplicateApiPrefix = (config) => {
+  if (config.url && config.baseURL?.endsWith("/api") && config.url.startsWith("/api/")) {
+    config.url = config.url.replace(/^\/api\//, "/");
+  }
+  return config;
+};
+
 const refreshClient = axios.create({
   baseURL,
   withCredentials: true,
+});
+
+refreshClient.interceptors.request.use((config) => {
+  cleanDuplicateApiPrefix(config);
+  return config;
 });
 
 const api = axios.create({
@@ -29,8 +50,10 @@ const isAuthEndpoint = (url = "") =>
   url.includes("/auth/refresh") ||
   url.includes("/auth/logout");
 
-export const isRefreshSessionRejected = (error) =>
-  error.response?.status === 401 || error.response?.status === 403;
+export const isRefreshSessionRejected = (error) => {
+  const status = error.response?.status;
+  return status === 401 || status === 403 || status === 404;
+};
 
 const decodeAccessTokenExpiresAt = (token) => {
   if (!token) return null;
@@ -60,12 +83,12 @@ const scheduleRefreshRetry = () => {
   clearScheduledRefresh();
   refreshTimer = window.setTimeout(() => {
     refreshAuthSession().catch((error) => {
-      console.error(error);
       if (isRefreshSessionRejected(error)) {
         clearScheduledRefresh();
         store.dispatch(logout());
         return;
       }
+      console.error("Scheduled session refresh failed:", error);
       scheduleRefreshRetry();
     });
   }, REFRESH_RETRY_DELAY_MS);
@@ -81,12 +104,12 @@ export const scheduleTokenRefresh = (token, accessTokenExpiresAt) => {
   );
   refreshTimer = window.setTimeout(() => {
     refreshAuthSession().catch((error) => {
-      console.error(error);
       if (isRefreshSessionRejected(error)) {
         clearScheduledRefresh();
         store.dispatch(logout());
         return;
       }
+      console.error("Scheduled session refresh failed:", error);
       scheduleRefreshRetry();
     });
   }, refreshDelay);
@@ -155,6 +178,7 @@ function shouldRetry(status) {
 }
 
 api.interceptors.request.use((config) => {
+  cleanDuplicateApiPrefix(config);
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -212,7 +236,6 @@ const refreshIfSessionIsNearExpiry = () => {
   if (!token || !expiresAt) return;
   if (expiresAt - Date.now() <= REFRESH_BUFFER_MS) {
     refreshAuthSession().catch((error) => {
-      console.error(error);
       if (isRefreshSessionRejected(error)) {
         clearScheduledRefresh();
         store.dispatch(logout());
