@@ -152,8 +152,22 @@ export const refreshAuthSession = async () => {
 
 function normalizeApiError(error) {
   if (error.response) {
+    let message =
+      error.response.data?.message || error.response.data?.error;
+    if (!message) {
+      if (
+        error.response.status === 502 ||
+        error.response.status === 503 ||
+        error.response.status === 504
+      ) {
+        message =
+          "Backend server is unreachable (502 Bad Gateway). Please ensure the backend server is running on port 5000.";
+      } else {
+        message = "Something went wrong.";
+      }
+    }
     return {
-      message: error.response.data?.message || error.response.data?.error || "Something went wrong.",
+      message,
       code: error.response.data?.code || "API_ERROR",
       status: error.response.status,
       errors: error.response.data?.errors,
@@ -173,7 +187,8 @@ function normalizeApiError(error) {
   };
 }
 
-function shouldRetry(status) {
+function shouldRetry(status, url = "") {
+  if (isAuthEndpoint(url)) return false;
   if (!status) return true;
   if (status >= 500) return true;
   if (status === 429) return true;
@@ -220,7 +235,10 @@ api.interceptors.response.use(
     }
 
     const retryCount = originalRequest._retryCount || 0;
-    if (retryCount < MAX_RETRIES && shouldRetry(error.response?.status)) {
+    if (
+      retryCount < MAX_RETRIES &&
+      shouldRetry(error.response?.status, originalRequest.url)
+    ) {
       originalRequest._retryCount = retryCount + 1;
       const delay = RETRY_DELAY_BASE * Math.pow(2, retryCount);
       await new Promise((resolve) => setTimeout(resolve, delay));
